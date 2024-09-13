@@ -1,0 +1,205 @@
+CMake Error at /opt/esp/idf/tools/cmake/third_party/GetGitRevisionDescription.cmake:78 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/third_party/GetGitRevisionDescription.cmake:93 (get_git_head_revision)
+  /opt/esp/idf/tools/cmake/build.cmake:99 (git_describe)
+  /opt/esp/idf/tools/cmake/build.cmake:272 (__build_get_idf_git_revision)
+  /opt/esp/idf/tools/cmake/idf.cmake:53 (__build_init)
+  /opt/esp/idf/tools/cmake/project.cmake:29 (include)
+  CMakeLists.txt:5 (include)
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake:246 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:564 (__project)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake:226 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:564 (__project)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake:232 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:564 (__project)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/CMakeDetermineASMCompiler.cmake:264 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:564 (__project)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake:80 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:564 (__project)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake:73 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:564 (__project)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /opt/esp/idf/tools/cmake/third_party/GetGitRevisionDescription.cmake:78 (configure_file):
+  Operation not permitted
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/third_party/GetGitRevisionDescription.cmake:93 (get_git_head_revision)
+  /opt/esp/idf/tools/cmake/project.cmake:693 (git_describe)
+  CMakeLists.txt:6 (project)
+
+
+CMake Error at /opt/esp/idf/tools/cmake/build.cmake:589 (message):
+  Traceback (most recent call last):
+
+    File "<frozen runpy>", line 198, in _run_module_as_main
+    File "<frozen runpy>", line 88, in _run_code
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_manager/prepare_components/__main__.py", line 6, in <module>
+      main()
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_manager/prepare_components/prepare.py", line 130, in main
+      args.func(args)
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_manager/prepare_components/prepare.py", line 29, in prepare_dep_dirs
+      ).prepare_dep_dirs(
+        ^^^^^^^^^^^^^^^^^
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_manager/core.py", line 98, in wrapper
+      return func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_manager/core.py", line 757, in prepare_dep_dirs
+      downloaded_components = download_project_dependencies(
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_manager/dependencies.py", line 392, in download_project_dependencies
+      download_path = fetcher.download()
+                      ^^^^^^^^^^^^^^^^^^
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_tools/sources/fetcher.py", line 70, in download
+      return self.source.download(self.component, self.managed_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_tools/sources/web_service.py", line 237, in download
+      copy_directory(self.component_cache_path(component), download_path)
+    File "/opt/esp/python_env/idf5.4_py3.12_env/lib/python3.12/site-packages/idf_component_tools/file_tools.py", line 121, in copy_directory
+      copytree(source_directory, destination_directory)
+    File "/usr/lib/python3.12/shutil.py", line 600, in copytree
+      return _copytree(entries=entries, src=src, dst=dst, symlinks=symlinks,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/usr/lib/python3.12/shutil.py", line 554, in _copytree
+      raise Error(errors)
+
+  shutil.Error:
+  [('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/src/led_strip_rmt_dev.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src/led_strip_rmt_dev.c',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/src/led_strip_spi_dev.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src/led_strip_spi_dev.c',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/src/led_strip_rmt_encoder.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src/led_strip_rmt_encoder.c',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/src/led_strip_rmt_encoder.h',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src/led_strip_rmt_encoder.h',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/src/led_strip_rmt_dev_idf4.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src/led_strip_rmt_dev_idf4.c',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/src/led_strip_api.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src/led_strip_api.c',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'src'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/src',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/include/led_strip_types.h',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/include/led_strip_types.h',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/include/led_strip_rmt.h',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/include/led_strip_rmt.h',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/include/led_strip.h',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/include/led_strip.h',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/include/led_strip_spi.h',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/include/led_strip_spi.h',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'include'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/include',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/idf_component.yml',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/idf_component.yml',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_spi_ws2812/main/led_strip_spi_ws2812_main.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812/main/led_strip_spi_ws2812_main.c',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_spi_ws2812/main/idf_component.yml',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812/main/idf_component.yml',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_spi_ws2812/main/CMakeLists.txt',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812/main/CMakeLists.txt',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'main'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812/main',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_spi_ws2812/README.md',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812/README.md',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_spi_ws2812/CMakeLists.txt',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812/CMakeLists.txt',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'led_strip_spi_ws2812'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_spi_ws2812',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_rmt_ws2812/main/idf_component.yml',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812/main/idf_component.yml',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_rmt_ws2812/main/led_strip_rmt_ws2812_main.c',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812/main/led_strip_rmt_ws2812_main.c',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_rmt_ws2812/main/CMakeLists.txt',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812/main/CMakeLists.txt',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'main'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812/main',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_rmt_ws2812/README.md',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812/README.md',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/examples/led_strip_rmt_ws2812/CMakeLists.txt',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812/CMakeLists.txt',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'led_strip_rmt_ws2812'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples/led_strip_rmt_ws2812',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'examples'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/examples',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/README.md',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/README.md',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/LICENSE',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/LICENSE',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/Doxyfile',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/Doxyfile',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/api.md',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/api.md',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/interface/led_strip_interface.h',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/interface/led_strip_interface.h',
+  '[Errno 1] Operation not permitted'), (<DirEntry 'interface'>,
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/interface',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/CMakeLists.txt',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/CMakeLists.txt',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a/CHANGELOG.md',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip/CHANGELOG.md',
+  '[Errno 1] Operation not permitted'),
+  ('/home/esp/.cache/Espressif/ComponentManager/service_d92d8f1e/espressif__led_strip_2.5.5_28c6509a',
+  '/workspaces/c209/Jongha/esp32/blink/managed_components/espressif__led_strip',
+  '[Errno 1] Operation not permitted')]
+
+Call Stack (most recent call first):
+  /opt/esp/idf/tools/cmake/project.cmake:710 (idf_build_process)
+  CMakeLists.txt:6 (project)
+
+
