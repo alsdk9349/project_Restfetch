@@ -1,4 +1,4 @@
-package com.example.backend.member.entity;
+package com.example.backend.domain.member.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
