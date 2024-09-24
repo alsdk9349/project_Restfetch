@@ -12,7 +12,8 @@ public class ResultResponse {
     private final Object data;
 
     public static ResultResponse of(ResultCode resultCode, Object data) {
-        return ResultResponse.builder().status(resultCode.getStatus().value())
+        return ResultResponse.builder()
+                .status(resultCode.getStatus().value())
                 .code(resultCode.getCode())
                 .data(data)
                 .message(resultCode.getMessage())
@@ -20,7 +21,8 @@ public class ResultResponse {
     }
 
     public static ResultResponse of(ResultCode resultCode) {
-        return ResultResponse.builder().status(resultCode.getStatus().value())
+        return ResultResponse.builder()
+                .status(resultCode.getStatus().value())
                 .code(resultCode.getCode())
                 .message(resultCode.getMessage())
                 .build();
