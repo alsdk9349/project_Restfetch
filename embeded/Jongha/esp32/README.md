@@ -104,12 +104,12 @@
         
         - `usbipd list` 로 연결된 usb 포트 확인
         
-        ![image.png](./image/esp-idf1.png)
+        ![image.png](image/esp-idf1.png)
         
         - `usbipd bind --busid 4-4` 로 원하는 포트를 공유
         - `usbipd attach --wsl --busid <busid>` 로 USB 디바이스 연결
         
-        ![image.png](./image/esp-idf2.png)
+        ![image.png](image/esp-idf2.png)
         
         - WSL 에서 `lsusb` 로 연결되었는지 확인
         - WSL에서 디바이스 사용을 완료한 후 USB 디바이스의 연결을 끊는 법
@@ -120,29 +120,29 @@
         
     - `idf.py set_target esp32` 실행
     
-    ![image.png](./image/esp-idf3.png)
+    ![image.png](image/esp-idf3.png)
     
     - `idf.py menuconfig` 실행
     
-    ![image.png](./image/esp-idf4.png)
+    ![image.png](image/esp-idf4.png)
     
     - python 버전 확인 (`python3 —version`, `pip3 --version` 은 최신 버전이어야 함.)
     - `python -m pip install esptool` 설치
     
-    ![image.png](./image/esp-idf5.png)
+    ![image.png](image/esp-idf5.png)
     
     - `idfx flash PORT` (PORT는 해당 USB PORT로 변경, 여기서는 COM6)
     - 만약 버전이 맞는데도 에러가 난다면 Window의 pip 버전이 맞지 않는 것이므로 PowerShell에서 pip 업그레이드하고 이어서 진행
     
-    ![image.png](./image/esp-idf6.png)
+    ![image.png](image/esp-idf6.png)
     
     - `idfx all PORT` (PORT는 해당 USB로 변경)
     
-    ![image.png](./image/esp-idf7.png)
+    ![image.png](image/esp-idf7.png)
     
     - 쭉 진행되다 보면 Hello World 가 뜨는 것을 확인 가능
     
-    ![image.png](./image/esp-idf8.png)
+    ![image.png](image/esp-idf8.png)
     
     - 중간에 에러가 있다면 아래 참고자료를 보고 따라할 것.
 
