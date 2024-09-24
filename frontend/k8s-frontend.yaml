@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-frontend-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-frontend-app
+  template:
+    metadata:
+      labels:
+        app: my-frontend-app
+    spec:
+      containers:
+        - name: my-frontend-app
+          image: my-frontend-app:latest # Docker 이미지 이름
+          ports:
+            - containerPort: 8080 # 애플리케이션이 사용하는 포트
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-frontend-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30002 # 외부에서 접근할 포트
+  selector:
+    app: my-frontend-app
