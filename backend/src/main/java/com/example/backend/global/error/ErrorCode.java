@@ -19,7 +19,10 @@ public enum ErrorCode {
     MEMBER_INVALID_CODE(HttpStatus.BAD_REQUEST, "M004", "유효하지 않은 인증번호입니다."),
     MEMBER_INVALID_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "M005", "Runtime : 이메일 전송에 실패하였습니다."),
     MEMBER_COOKIE_NOT_FOUND(HttpStatus.NOT_FOUND, "M006", "쿠키를 찾지 못했습니다"),
-    MEMBER_NOT_ADMIN(HttpStatus.FORBIDDEN, "M007", "관리자가 아닌 사용자 입니다.");
+    MEMBER_NOT_ADMIN(HttpStatus.FORBIDDEN, "M007", "관리자가 아닌 사용자 입니다."),
+
+    // Email
+    EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "E001", "이메일 전송에 실패했습니다.");
 
 
     private final HttpStatus status;
