@@ -1,5 +1,5 @@
-# 기본 이미지로 OpenJDK 사용
-FROM openjdk:11-jdk-slim
+# 기본 이미지로 OpenJDK 17 사용
+FROM openjdk:17-jdk-slim
 
 # 작업 디렉토리 설정
 WORKDIR /app
