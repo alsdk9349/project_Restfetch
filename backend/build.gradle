@@ -50,5 +50,5 @@ dependencies {
 }
 
 tasks.named('bootJar') {
-    mainClass = 'RestFetchApplication'
+    mainClass = 'com.example.backend.RestFetchApplication'
 }
