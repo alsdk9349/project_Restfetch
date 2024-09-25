@@ -29,4 +29,8 @@ public class Member {
     @NotNull
     @Column(name = "password")
     private String password;
+
+    @Column(name = "token", length = 500)
+    private String token;
+
 }

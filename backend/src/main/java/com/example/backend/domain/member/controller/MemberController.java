@@ -3,10 +3,14 @@ package com.example.backend.domain.member.controller;
 
 import com.example.backend.domain.member.dto.request.EmailCheckRequestDto;
 import com.example.backend.domain.member.dto.request.EmailRequestDto;
+import com.example.backend.domain.member.dto.request.LoginRequestDto;
 import com.example.backend.domain.member.dto.request.SignupRequestDto;
+import com.example.backend.domain.member.dto.response.LoginResponseDto;
 import com.example.backend.domain.member.service.MemberService;
 import com.example.backend.global.result.ResultCode;
 import com.example.backend.global.result.ResultResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +68,19 @@ public class MemberController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-
+    /**
+     * 로그인
+     * @param loginRequestDto
+     * @param response
+     * @return
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        LoginResponseDto loginResponseDto = memberService.login(loginRequestDto, response);
+        log.info("Login response: {}", loginResponseDto);
+        ResultResponse resultResponse = ResultResponse.of(ResultCode.LOGIN_OK, loginResponseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
 
 
 }
