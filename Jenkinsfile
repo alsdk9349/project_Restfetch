@@ -16,13 +16,13 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                script {
-                    sh 'docker build -t my-frontend-app ./frontend'
-                }
-            }
-        }
+//         stage('Build Frontend') {
+//             steps {
+//                 script {
+//                     sh 'docker build -t my-frontend-app ./frontend'
+//                 }
+//             }
+//         }
 
         stage('Deploy to Kubernetes') {
             steps {
