@@ -30,7 +30,7 @@ pipeline {
                     // Backend 배포
                     sh 'kubectl apply -f backend/k8s-backend.yaml'
                     // Frontend 배포
-                    sh 'kubectl apply -f frontend/k8s-frontend.yaml'
+                    // sh 'kubectl apply -f frontend/k8s-frontend.yaml'
                 }
             }
         }
