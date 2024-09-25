@@ -24,6 +24,33 @@ public class MemberController {
 
     private final MemberService memberService;
 
+
+    /**
+     이메일 인증번호 발송
+     * @param EmailRequestDto
+     * @return
+     */
+    @PostMapping("/emails/send")
+    public ResponseEntity<?> sendCode(@Valid @RequestBody EmailRequestDto EmailRequestDto) {
+        log.info("Email Send: {}", EmailRequestDto.getEmail());
+        memberService.sendCodeToEmail(EmailRequestDto.getEmail());
+        ResultResponse resultResponse = ResultResponse.of(ResultCode.EMAIL_SEND_OK);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    /**
+     * 이메일 인증번호 확인
+     * @param EmailCheckRequestDto
+     * @return
+     */
+    @PostMapping("/emails/verify")
+    public ResponseEntity<?> verifyCode(@Valid @RequestBody EmailCheckRequestDto EmailCheckRequestDto) {
+        log.info("Email verification: {}", EmailCheckRequestDto.getVerificationCode());
+        memberService.verifyCode(EmailCheckRequestDto.getEmail(), EmailCheckRequestDto.getVerificationCode());
+        ResultResponse resultResponse = ResultResponse.of(ResultCode.VALIDATION_NUMBER_OK);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
     /**
      * 회원가입
      * @param SignupRequestDto
@@ -34,29 +61,10 @@ public class MemberController {
         log.info("Signup request: {}", SignupRequestDto.getEmail());
         memberService.signup(SignupRequestDto);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.SIGNUP_OK);
-        return ResponseEntity.status(resultResponse.getStatus()).build();
-    }
-
-    /**
-     이메일 인증번호 발송
-     * @param EmailRequestDto
-     * @return
-     */
-    @PostMapping("/emails/send")
-    public ResponseEntity<?> sendCode(@Valid @RequestBody EmailRequestDto EmailRequestDto) {
-        log.info("Email request: {}", EmailRequestDto.getEmail());
-        memberService.sendCodeToEmail(EmailRequestDto.getEmail());
-        ResultResponse resultResponse = ResultResponse.of(ResultCode.EMAIL_SEND_OK);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @PostMapping("/emails/verify")
-    public ResponseEntity<?> verifyCode(@Valid @RequestBody EmailCheckRequestDto EmailCheckRequestDto) {
-        log.info("Email verification: {}", EmailCheckRequestDto.getVerificationCode());
-        memberService.verifyCode(EmailCheckRequestDto.getEmail(), EmailCheckRequestDto.getVerificationCode());
-        ResultResponse resultResponse = ResultResponse.of(ResultCode.VALIDATION_NUMBER_OK);
-        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
-    }
+
 
 
 }
