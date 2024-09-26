@@ -239,6 +239,11 @@ public class MemberServiceImpl implements MemberService {
         return loginResponseDto;
     }
 
+    public void logout(HttpServletRequest request) {
+        String email = cookieUtil.getMemberEmail(request);
+        memberRedisService.deleteValue(AUTH_CODE_PREFIX + email);
+    }
+
 //    /**
 //     * 엑세스 토큰 발급
 //     * 리프레시 토큰만 있는 상황

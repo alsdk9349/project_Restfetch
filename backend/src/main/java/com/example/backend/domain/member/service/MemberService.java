@@ -3,6 +3,7 @@ package com.example.backend.domain.member.service;
 import com.example.backend.domain.member.dto.request.LoginRequestDto;
 import com.example.backend.domain.member.dto.request.SignupRequestDto;
 import com.example.backend.domain.member.dto.response.LoginResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface MemberService {
@@ -11,4 +12,5 @@ public interface MemberService {
     void signup(SignupRequestDto signupRequestDto);
     void sendCodeToEmail(String Email);
     void verifyCode(String code, String userCode);
+    void logout(HttpServletRequest request);
 }
