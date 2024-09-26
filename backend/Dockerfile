@@ -16,11 +16,11 @@ RUN chmod +x gradlew
 # 의존성 설치 및 빌드
 RUN ./gradlew build --no-daemon
 
-# 애플리케이션 JAR 파일을 컨테이너에 복사
-COPY build/libs/*.jar app.jar
-
 # 애플리케이션 포트 설정
 EXPOSE 8080
 
+# Gradle 빌드 후 생성된 JAR 파일 복사
+COPY build/libs/backend-0.0.1-SNAPSHOT.jar app.jar
+
 # 애플리케이션 실행
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

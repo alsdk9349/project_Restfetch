@@ -2,40 +2,35 @@ pipeline {
     agent any
 
     stages {
-        // GitLab에서 코드 체크아웃
         stage('Checkout') {
             steps {
-                checkout scm
+                git url: 'https://lab.ssafy.com/s11-mobility-smarthome-sub1/S11P21C209.git', credentialsId: 'e6553265-42ed-4359-87e3-3d27fca01aae'
             }
         }
-
-        // 백엔드 빌드 및 Docker 이미지 생성
         stage('Build Backend') {
             steps {
-                script {
-                    sh 'docker build -t my-backend-app ./backend'
-                }
+                sh 'cd backend && ./gradlew build' // 백엔드 Gradle 빌드
+                sh 'docker build -t backend-app -f backend/Dockerfile backend/' // 백엔드 Docker 이미지 빌드
             }
         }
-
-        // 도커 컨테이너 실행
-        stage('Run Backend') {
+        stage('Deploy Backend') {
             steps {
-                script {
-                    // 기존 컨테이너 중지 및 삭제 (이미 실행 중인 경우)
-                    sh '''
-                    if [ "$(docker ps -q -f name=my-backend-app)" ]; then
-                        docker stop my-backend-app
-                        docker rm my-backend-app
-                    fi
-                    '''
-
-                    // 새로운 컨테이너 실행
-                    sh '''
-                    docker run -d --name my-backend-app -p 8080:8080 my-backend-app
-                    '''
-                }
+                sh 'docker ps -q --filter "name=backend-app" | xargs -r docker stop'
+                sh 'docker ps -aq --filter "name=backend-app" | xargs -r docker rm'
+                sh 'docker run -d -p 8080:8080 --name backend-app backend-app'
             }
         }
+//         stage('Build Frontend') {
+//             steps {
+//                 sh 'docker build -t frontend-app -f frontend/Dockerfile frontend/' // 프론트엔드 Docker 이미지 빌드
+//             }
+//         }
+//         stage('Deploy Frontend') {
+//             steps {
+//                 sh 'docker ps -q --filter "name=frontend-app" | xargs -r docker stop'
+//                 sh 'docker ps -aq --filter "name=frontend-app" | xargs -r docker rm'
+//                 sh 'docker run -d -p 80:80 --name frontend-app frontend-app'
+//             }
+//         }
     }
 }
