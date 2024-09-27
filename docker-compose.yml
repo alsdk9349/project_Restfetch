@@ -3,8 +3,8 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend  # backend 폴더를 컨텍스트로 설정
+      dockerfile: Dockerfile  # Dockerfile의 이름
     ports:
       - "8080:8080"
     environment:
