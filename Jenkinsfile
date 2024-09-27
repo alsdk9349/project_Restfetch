@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'jenkins/jenkins:lts'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'  // Docker 소켓을 마운트하여 호스트의 Docker 사용
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
@@ -12,8 +12,8 @@ pipeline {
                 script {
                     // 백엔드 빌드
                     dir('backend') {
-                        sh 'chmod +x gradlew' // gradlew에 실행 권한 추가
-                        sh './gradlew build'   // Gradle 빌드 실행
+                        sh 'chmod +x gradlew'
+                        sh './gradlew build'
                     }
                 }
             }
@@ -29,20 +29,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // 기존 컨테이너 종료 및 삭제
-                    sh 'docker stop backend || true' // 컨테이너가 실행 중이면 정지
-                    sh 'docker rm backend || true'   // 컨테이너 삭제
-
-                    // 새 컨테이너 실행
-                    sh '''
-                    docker run -d --name backend -p 8080:8080 \
-                    -e SPRING_DATASOURCE_URL=jdbc:mysql://172.26.4.40:3306/restfetch \
-                    -e SPRING_DATASOURCE_USERNAME=root \
-                    -e SPRING_DATASOURCE_PASSWORD=Rnwheo1234! \
-                    -e SPRING_REDIS_HOST=172.26.4.40 \
-                    -e SPRING_REDIS_PORT=6379 \
-                    my-backend-app:latest
-                    '''
+                    // Docker Compose를 사용하여 서비스 배포
+                    sh 'docker-compose up -d --build'
                 }
             }
         }

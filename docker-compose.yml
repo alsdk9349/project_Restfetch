@@ -1,19 +1,31 @@
 version: '3.8'
 
 services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8081:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock # Docker 소켓 마운트
+    networks:
+      - my-network
+
   backend:
-    image: my-backend-app:latest  # 빌드한 Docker 이미지 사용
+    image: my-backend-app:latest
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://172.26.4.40:3306/restfetch  # EC2의 MySQL IP 주소 및 포트
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/restfetch
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=Rnwheo1234!
-      - SPRING_REDIS_HOST=172.26.4.40  # EC2의 Redis IP 주소
-      - SPRING_REDIS_PORT=6379  # Redis 포트
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     depends_on:
       - db
       - redis
+    networks:
+      - my-network
 
   db:
     image: mysql:5.7
@@ -21,7 +33,17 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Rnwheo1234!
       MYSQL_DATABASE: restfetch
+    networks:
+      - my-network
 
   redis:
     image: redis:alpine
     restart: always
+    networks:
+      - my-network
+
+networks:
+  my-network:
+
+volumes:
+  jenkins_home:
