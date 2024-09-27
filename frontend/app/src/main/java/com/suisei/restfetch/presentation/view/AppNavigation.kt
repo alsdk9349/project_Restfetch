@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.suisei.restfetch.presentation.view.account.AccountScreen
 
 @Composable
 fun AppNavigation() {

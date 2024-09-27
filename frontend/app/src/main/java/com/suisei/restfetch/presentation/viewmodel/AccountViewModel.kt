@@ -27,6 +27,10 @@ class AccountViewModel @Inject constructor() : ViewModel() {
         handleViewIntent()
     }
 
+    fun sendViewIntent(intent: AccountIntent) = viewModelScope.launch(Dispatchers.IO) {
+        accountIntent.send(intent)
+    }
+
     private fun handleViewIntent() {
         viewModelScope.launch(Dispatchers.IO) {
             accountIntent.consumeAsFlow().collect { intent ->
