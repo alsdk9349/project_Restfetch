@@ -5,9 +5,10 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Gradle Wrapper와 설정 파일을 복사
-COPY gradlew gradlew
-COPY gradle gradle
-COPY build.gradle settings.gradle ./
+COPY backend/gradlew ./gradlew
+COPY backend/gradle ./gradle
+COPY backend/build.gradle ./build.gradle
+COPY backend/settings.gradle ./settings.gradle
 
 # gradlew 파일에 실행 권한 부여
 RUN chmod +x gradlew
@@ -16,7 +17,7 @@ RUN chmod +x gradlew
 RUN ./gradlew dependencies
 
 # 나머지 소스 코드 복사
-COPY . .
+COPY backend/ ./
 
 # 애플리케이션 포트 설정
 EXPOSE 8080
