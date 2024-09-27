@@ -24,9 +24,18 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // 도커 컴포즈를 사용하여 컨테이너 재시작
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
+                    // 기존 컨테이너 종료 및 삭제
+                    sh 'docker stop backend || true' // 컨테이너가 실행 중이면 정지
+                    sh 'docker rm backend || true'   // 컨테이너 삭제
+
+                    // 새 컨테이너 실행
+                    sh 'docker run -d --name backend -p 8080:8080 ' +
+                       '-e SPRING_DATASOURCE_URL=jdbc:mysql://172.26.4.40:3306/restfetch ' +
+                       '-e SPRING_DATASOURCE_USERNAME=root ' +
+                       '-e SPRING_DATASOURCE_PASSWORD=Rnwheo1234! ' +
+                       '-e SPRING_REDIS_HOST=172.26.4.40 ' +
+                       '-e SPRING_REDIS_PORT=6379 ' +
+                       'my-backend-app:latest'
                 }
             }
         }
