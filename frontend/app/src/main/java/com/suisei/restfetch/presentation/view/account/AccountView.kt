@@ -68,13 +68,13 @@ fun EmailInput(email: String, onEmailChange: (String) -> Unit, enabled: Boolean 
 }
 
 @Composable
-fun PasswordInput(password: String, onPasswordChange: (String) -> Unit) {
+fun PasswordInput(label: String = "password", password: String, onPasswordChange: (String) -> Unit) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        label = { Text(text = "Password") },
+        label = { Text(text = label) },
         textStyle = TextStyle.Default.copy(fontSize = 20.sp),
         modifier = Modifier.width(288.dp),
         singleLine = true
