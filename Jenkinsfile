@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'jenkins/jenkins:lts'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'  // Docker 소켓을 마운트하여 호스트의 Docker 사용
+        }
+    }
 
     stages {
         stage('Build') {
@@ -29,13 +34,15 @@ pipeline {
                     sh 'docker rm backend || true'   // 컨테이너 삭제
 
                     // 새 컨테이너 실행
-                    sh 'docker run -d --name backend -p 8080:8080 ' +
-                       '-e SPRING_DATASOURCE_URL=jdbc:mysql://172.26.4.40:3306/restfetch ' +
-                       '-e SPRING_DATASOURCE_USERNAME=root ' +
-                       '-e SPRING_DATASOURCE_PASSWORD=Rnwheo1234! ' +
-                       '-e SPRING_REDIS_HOST=172.26.4.40 ' +
-                       '-e SPRING_REDIS_PORT=6379 ' +
-                       'my-backend-app:latest'
+                    sh '''
+                    docker run -d --name backend -p 8080:8080 \
+                    -e SPRING_DATASOURCE_URL=jdbc:mysql://172.26.4.40:3306/restfetch \
+                    -e SPRING_DATASOURCE_USERNAME=root \
+                    -e SPRING_DATASOURCE_PASSWORD=Rnwheo1234! \
+                    -e SPRING_REDIS_HOST=172.26.4.40 \
+                    -e SPRING_REDIS_PORT=6379 \
+                    my-backend-app:latest
+                    '''
                 }
             }
         }
