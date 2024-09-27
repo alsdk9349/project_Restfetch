@@ -21,6 +21,7 @@ public class CustomUserDetails implements UserDetails {
 
     private final CustomUserInfoDto member;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 

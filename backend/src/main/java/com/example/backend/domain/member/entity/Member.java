@@ -1,10 +1,13 @@
 package com.example.backend.domain.member.entity;
 
+import com.example.backend.domain.fetch.entity.Fetch;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -32,5 +35,8 @@ public class Member {
 
     @Column(name = "token", length = 500)
     private String token;
+
+    @OneToMany(mappedBy = "member")
+    private List<Fetch> fetch = new ArrayList<>();
 
 }
