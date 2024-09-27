@@ -7,7 +7,8 @@ pipeline {
                 script {
                     // 백엔드 빌드
                     dir('backend') {
-                        sh './gradlew build'
+                        sh 'chmod +x gradlew' // gradlew에 실행 권한 추가
+                        sh './gradlew build'   // Gradle 빌드 실행
                     }
                 }
             }
