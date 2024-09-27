@@ -17,7 +17,7 @@ RUN chmod +x gradlew
 RUN ./gradlew dependencies
 
 # 나머지 소스 코드 복사
-COPY . ./  # 현재 컨텍스트에서 모든 파일 복사
+COPY src ./src
 
 # 애플리케이션 포트 설정
 EXPOSE 8080
