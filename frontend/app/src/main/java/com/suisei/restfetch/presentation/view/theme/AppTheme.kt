@@ -67,3 +67,8 @@ fun BasicButton(
 fun dropdownBackgroundColor(): Color {
     return Color(0XFFF5F3ED)
 }
+
+@Composable
+fun menuButtonColor(): ButtonColors {
+    return ButtonDefaults.buttonColors(containerColor = Color(0xFFFFFBF2))
+}

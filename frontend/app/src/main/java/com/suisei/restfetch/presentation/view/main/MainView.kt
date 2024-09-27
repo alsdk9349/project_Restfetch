@@ -45,7 +45,7 @@ fun MainScreen(navController: NavController) {
     ) {
         when (val state = viewState.value) {
             is MainViewState.Home -> HomeScreen()
-            is MainViewState.MyPage -> {}
+            is MainViewState.MyPage -> MyPageScreen()
         }
     }
 }
