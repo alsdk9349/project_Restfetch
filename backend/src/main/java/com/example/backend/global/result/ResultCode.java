@@ -20,7 +20,13 @@ public enum ResultCode {
     LOGOUT_OK(HttpStatus.OK , "M005", "로그아웃 했습니다."),
 
     // Fetch
-    FETCH_REGISTER_OK(HttpStatus.OK, "F001", "패치 등록 성공했습니다.");
+    FETCH_REGISTER_OK(HttpStatus.OK, "F001", "패치 등록 성공했습니다."),
+    FETCH_DELETE_OK(HttpStatus.OK, "F002", "패치 삭제 성공했습니다."),
+
+    // Observer
+    OBSERVER_REGISTER_OK(HttpStatus.OK, "F001", "옵저버 등록 성공했습니다."),
+    OBSERVER_DELETE_OK(HttpStatus.OK, "F002", "옵저버 삭제 성공했습니다.");
+
 
     private final HttpStatus status;
     private final String code;

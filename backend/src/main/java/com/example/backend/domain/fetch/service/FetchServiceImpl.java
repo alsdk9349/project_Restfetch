@@ -1,7 +1,7 @@
 package com.example.backend.domain.fetch.service;
 
-import com.example.backend.domain.fetch.dto.request.RegisterFetchRequestDto;
-import com.example.backend.domain.fetch.dto.response.RegisterFetchResponseDto;
+import com.example.backend.domain.fetch.dto.request.FetchRegisterRequestDto;
+import com.example.backend.domain.fetch.dto.response.FetchRegisterResponseDto;
 import com.example.backend.domain.fetch.entity.Fetch;
 import com.example.backend.domain.fetch.repository.FetchRepository;
 import com.example.backend.domain.member.entity.Member;
@@ -10,11 +10,10 @@ import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
 import com.example.backend.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -27,8 +26,9 @@ public class FetchServiceImpl implements FetchService {
     private final MemberRepository memberRepository;
     private final CookieUtil cookieUtil;
 
-    public RegisterFetchResponseDto registerFetch(RegisterFetchRequestDto requestDto, HttpServletRequest request) {
-        log.info("Registering fetch request");
+    @Transactional
+    public FetchRegisterResponseDto registerFetch(FetchRegisterRequestDto requestDto, HttpServletRequest request) {
+        log.info("RegisterFetch request : {} ", requestDto);
         long memberId = cookieUtil.getUserId(request);
 
         Member member = memberRepository.findById(memberId)
@@ -38,7 +38,7 @@ public class FetchServiceImpl implements FetchService {
         String nickname = requestDto.getNickname();
 
 
-        Optional<Fetch> ByfetchSerialNumber = fetchRepository.findByFetchSerialNumber(fetchSerialNumber);
+        Optional<Fetch> ByfetchSerialNumber = fetchRepository.findByFetchSerialNumberAndMember_MemberId(fetchSerialNumber, memberId);
         if(ByfetchSerialNumber.isPresent()) {
             throw new BusinessException(ErrorCode.FETCH_DUPLICATED);
         }
@@ -51,11 +51,24 @@ public class FetchServiceImpl implements FetchService {
 
         Fetch saveFetch = fetchRepository.save(fetch);
 
-        return RegisterFetchResponseDto.builder()
+        return FetchRegisterResponseDto.builder()
                 .memberId(saveFetch.getMember().getMemberId())
                 .fetchId(saveFetch.getFetchId())
                 .nickname(saveFetch.getNickname())
                 .build();
+    }
+
+    @Transactional
+    public void deleteFetch(Long fetchId, HttpServletRequest request) {
+        log.info("Deleting fetch request");
+
+        Optional<Fetch> fetch = fetchRepository.findById(fetchId);
+
+        if(!fetch.isPresent()) {
+            throw new BusinessException(ErrorCode.FETCH_NOT_FOUND);
+        }
+
+        fetchRepository.deleteById(fetchId);
     }
 
 }

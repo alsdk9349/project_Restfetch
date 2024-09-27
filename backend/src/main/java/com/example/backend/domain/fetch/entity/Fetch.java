@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="`fetch`")
 @Getter
@@ -22,14 +25,17 @@ public class Fetch {
     private Member member;
 
     @NotNull
-    @Column(name = "fetchSerialNumber", unique = true, length=255)
+    @Column(name = "fetch_serial_number", length=255)
     private String fetchSerialNumber;
 
     @NotNull
-    @Column(name = "nickname", unique = true, length = 30)
+    @Column(name = "nickname", length = 30)
     private String nickname;
 
-    @NotNull
     @Column(name = "battery", columnDefinition = "int")
     private int battery;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "fetch")
+    private List<Observer> observers = new ArrayList<>();
 }

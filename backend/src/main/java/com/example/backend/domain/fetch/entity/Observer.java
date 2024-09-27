@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.Set;
+
 @Entity
 @Table(name = "observer")
 @Getter
@@ -17,6 +21,14 @@ public class Observer {
     private long observer_id;
 
     @NotNull
-    @Column(name = "observerSerialNumber", unique = true, length = 255)
+    @Column(name = "observer_serial_number", length = 255)
     private String observerSerialNumber;
+
+    @NotNull
+    @Column(name = "location", columnDefinition = "point")
+    private Point2D.Double location;
+
+    @ManyToOne
+    @JoinColumn(name="fetch_id", columnDefinition = "int unsigned")
+    private Fetch fetch;
 }

@@ -36,7 +36,8 @@ public class Member {
     @Column(name = "token", length = 500)
     private String token;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member")
-    private List<Fetch> fetch = new ArrayList<>();
+    private List<Fetch> fetches = new ArrayList<>();
 
 }
