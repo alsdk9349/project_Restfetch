@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend  # backend 폴더를 컨텍스트로 설정
-      dockerfile: Dockerfile  # Dockerfile의 이름
+    image: my-backend-app:latest  # 빌드한 Docker 이미지 사용
     ports:
       - "8080:8080"
     environment:
@@ -21,8 +19,9 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rnwheo1234!
+      MYSQL_ROOT_PASSWORD: Rnwheo1234!
       MYSQL_DATABASE: restfetch
+
   redis:
     image: redis:alpine
     restart: always

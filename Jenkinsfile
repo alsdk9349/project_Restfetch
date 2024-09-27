@@ -13,11 +13,18 @@ pipeline {
                 }
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Docker 이미지 빌드
+                    sh 'docker build -t my-backend-app:latest ./backend'
+                }
+            }
+        }
         stage('Deploy') {
             steps {
                 script {
-                    // 도커 이미지 빌드 및 컨테이너 재시작
-                    sh 'docker-compose build'
+                    // 도커 컴포즈를 사용하여 컨테이너 재시작
                     sh 'docker-compose down'
                     sh 'docker-compose up -d'
                 }
