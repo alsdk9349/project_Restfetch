@@ -19,13 +19,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.suisei.restfetch.presentation.state.AccountViewState
 import com.suisei.restfetch.presentation.view.theme.backgroundColor
 import com.suisei.restfetch.presentation.viewmodel.AccountViewModel
 
 
 @Composable
-fun AccountScreen() {
+fun AccountScreen(navController: NavController) {
     val viewModel: AccountViewModel = viewModel()
     val viewState = viewModel.viewState.collectAsState()
 
@@ -33,7 +35,7 @@ fun AccountScreen() {
         modifier = Modifier.background(backgroundColor())
     ) {
         when (val state = viewState.value) {
-            AccountViewState.Login -> LoginScreen()
+            AccountViewState.Login -> LoginScreen(navController)
             AccountViewState.SignUp -> SignUpScreen()
             AccountViewState.ForgotPassword -> ForgotPasswordScreen()
         }

@@ -1,17 +1,13 @@
 package com.suisei.restfetch.presentation.view.account
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +30,6 @@ import com.suisei.restfetch.presentation.intent.AccountIntent
 import com.suisei.restfetch.presentation.intent.VerifyEmailIntent
 import com.suisei.restfetch.presentation.state.VerifyEmailState
 import com.suisei.restfetch.presentation.view.theme.BasicButton
-import com.suisei.restfetch.presentation.view.theme.buttonTransparentTheme
 import com.suisei.restfetch.presentation.viewmodel.AccountViewModel
 
 @Composable
@@ -96,7 +91,10 @@ fun SignUpScreen() {
         }
 
         PasswordInput(password = password, onPasswordChange = { password = it })
-        PasswordInput(label = "Password Confirm", password = passwordConfirm, onPasswordChange = { passwordConfirm = it })
+        PasswordInput(
+            label = "Password Confirm",
+            password = passwordConfirm,
+            onPasswordChange = { passwordConfirm = it })
         NicknameInput(nickname = nickname, onNicknameChange = { nickname = it })
 
         CreateButton()

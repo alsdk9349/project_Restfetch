@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.suisei.restfetch.R
 import com.suisei.restfetch.presentation.intent.AccountIntent
@@ -34,7 +35,7 @@ import com.suisei.restfetch.presentation.view.theme.buttonTransparentTheme
 import com.suisei.restfetch.presentation.viewmodel.AccountViewModel
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -55,7 +56,7 @@ fun LoginScreen() {
             }
         }
 
-        EmailLoginButton()
+        EmailLoginButton(navController)
         GoogleLoginButton()
     }
 }
@@ -98,8 +99,8 @@ fun LoadViewButton(text: String, accountIntent: AccountIntent) {
 }
 
 @Composable
-fun EmailLoginButton() {
-    val navController = rememberNavController()
+fun EmailLoginButton(navController: NavController) {
+
     OutlinedButton(onClick = {
         navController.navigate("main_screen") {
             popUpTo("login_screen") {

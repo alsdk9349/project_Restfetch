@@ -27,6 +27,22 @@ fun buttonTransparentTheme(): ButtonColors {
 }
 
 @Composable
+fun menuButtonBorderColor(): Color {
+    return Color(0XFFE0E0E0)
+}
+
+
+@Composable
+fun bottomAppBarBackgroundColor(): Color {
+    return Color(0XFFEFEEE9)
+}
+
+@Composable
+fun fetchButtonColor(): ButtonColors {
+    return ButtonDefaults.buttonColors(containerColor = Color(0xFFD3B8D5))
+}
+
+@Composable
 fun BasicButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -45,4 +61,9 @@ fun BasicButton(
     ) {
         content()
     }
+}
+
+@Composable
+fun dropdownBackgroundColor(): Color {
+    return Color(0XFFF5F3ED)
 }
