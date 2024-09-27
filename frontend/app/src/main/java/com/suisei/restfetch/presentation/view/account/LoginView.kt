@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -118,8 +119,10 @@ fun EmailLoginButton() {
 
 @Composable
 fun GoogleLoginButton() {
+    val viewModel: AccountViewModel = viewModel()
+    val context = LocalContext.current
     Button(
-        onClick = {  },
+        onClick = { viewModel.requestGoogleAuth(context) },
         modifier = Modifier
             .wrapContentHeight()
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),

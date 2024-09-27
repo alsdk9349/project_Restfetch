@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "296076045402",
+    "project_id": "restfetch",
+    "storage_bucket": "restfetch.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296076045402:android:a5090bd7ac492da55dfc63",
+        "android_client_info": {
+          "package_name": "com.suisei.restfetch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296076045402-k8kbu9g84lufb59cogutjivn8i79jk9m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.suisei.restfetch",
+            "certificate_hash": "90a656688d6595459a424caa61156fe2055d5c71"
+          }
+        },
+        {
+          "client_id": "296076045402-87ufif57u67kshu0q58bv71fai8bolpu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4CtzjQgMvYi7wdkfU8t3g8rgKnDpu5NQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296076045402-87ufif57u67kshu0q58bv71fai8bolpu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
