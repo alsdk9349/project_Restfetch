@@ -14,6 +14,9 @@ hiltAndroidCompiler = "2.51.1"
 navigationCompose = "2.8.1"
 uiToolingPreview = "1.7.2"
 uiToolingPreviewAndroidVersion = "1.7.2"
+googleid = "1.1.1"
+credentials = "1.2.2"
+credentialsPlayServicesAuth = "1.2.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -29,6 +32,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentialsPlayServicesAuth" }
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

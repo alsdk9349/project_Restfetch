@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -56,6 +57,11 @@ dependencies {
 
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
