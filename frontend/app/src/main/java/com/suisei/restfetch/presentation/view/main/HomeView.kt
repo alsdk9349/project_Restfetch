@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
@@ -36,12 +38,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.suisei.restfetch.R
 import com.suisei.restfetch.presentation.intent.MainIntent
 import com.suisei.restfetch.presentation.state.MainViewState
 import com.suisei.restfetch.presentation.view.theme.backgroundColor
@@ -55,7 +59,6 @@ import com.suisei.restfetch.presentation.viewmodel.MainViewModel
 fun HomeScreen() {
     val viewModel: MainViewModel = viewModel()
     val state = viewModel.state.collectAsState()
-    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -69,35 +72,20 @@ fun HomeScreen() {
                 .fillMaxWidth()
                 .weight(1f), contentAlignment = Alignment.Center
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-                modifier = Modifier
-                    .padding(24.dp)
-                    .verticalScroll(scrollState)
-            ) {
-
-
-            }
+            FallenObjectContainer()
 
             when (val state = state.value) {
                 is MainViewState.Home -> {
                     if (state.homeViewState.selectState.isSelected) {
-                        Button(
-                            onClick = { viewModel.sendIntent(MainIntent.HideFetchButton) },
-                            colors = fetchButtonColor(),
-                            modifier = Modifier
+                        FetchButton(
+                            Modifier
                                 .align(Alignment.BottomCenter)
-                                .padding(64.dp),
-                            contentPadding = PaddingValues(24.dp)
-                        ) {
-                            Text(text = "갤럭시 워치 Fetch", fontSize = 28.sp)
-                        }
+                        )
                     }
                 }
 
                 MainViewState.MyPage -> TODO()
             }
-
         }
 
         BottomAppBar()
@@ -251,10 +239,65 @@ fun NotificationList(showDialog: Boolean, dismissList: () -> Unit) {
     }
 }
 
+@Composable
+fun FallenObjectContainer() {
+    val scrollState = rememberScrollState()
+    Column(
+        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
+        modifier = Modifier
+            .padding(24.dp)
+            .fillMaxHeight()
+            .verticalScroll(scrollState)
+    ) {
+        FallenObject(R.drawable.logo, "갤럭시 워치")
+        /*FallenObject(R.drawable.logo, "갤럭시 탭")
+        FallenObject(R.drawable.logo, "갤럭시 워치")
+        FallenObject(R.drawable.logo, "갤럭시 탭")*/
+    }
+}
+
+@Composable
+fun FallenObject(imageId: Int, imageObject: String) {
+    val viewModel: MainViewModel = viewModel()
+    Button(
+        onClick = { viewModel.sendIntent(MainIntent.ShowFetchButton) },
+        colors = buttonTransparentTheme(),
+        shape = RectangleShape,
+        elevation = ButtonDefaults.elevatedButtonElevation(pressedElevation = 8.dp),
+        modifier = Modifier.padding(4.dp),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = imageId),
+                contentDescription = imageObject,
+                modifier = Modifier
+                    .width(240.dp)
+                    .height(160.dp)
+            )
+            Text(imageObject, fontSize = 28.sp, color = Color.Black)
+        }
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0XFFFFFDF8)
 @Composable
 fun PreviewHomeView() {
     HomeScreen()
+}
+
+@Composable
+fun FetchButton(modifier: Modifier) {
+    val viewModel: MainViewModel = viewModel()
+    Button(
+        onClick = { viewModel.sendIntent(MainIntent.HideFetchButton) },
+        colors = fetchButtonColor(),
+        modifier = modifier
+            .padding(64.dp),
+        contentPadding = PaddingValues(24.dp)
+    ) {
+        Text(text = "갤럭시 워치 Fetch", fontSize = 28.sp)
+    }
 }
 
 @Preview
