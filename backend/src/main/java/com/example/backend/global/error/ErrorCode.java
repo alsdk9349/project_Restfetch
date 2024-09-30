@@ -22,9 +22,15 @@ public enum ErrorCode {
     MEMBER_NOT_ADMIN(HttpStatus.FORBIDDEN, "M007", "관리자가 아닌 사용자 입니다."),
 
     // Email
-    EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "E001", "이메일 전송에 실패했습니다.");
+    EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "E001", "이메일 전송에 실패했습니다."),
 
+    // Fetch
+    FETCH_DUPLICATED(HttpStatus.CONFLICT, "F001", "이미 등록된 패치입니다."),
+    FETCH_NOT_FOUND(HttpStatus.NOT_FOUND, "F002", "등록된 패치가 없습니다."),
 
+    //Observer
+    OBSERVER_DUPLICATED(HttpStatus.CONFLICT, "O001", "이미 등록된 옵저버입니다."),
+    OBSERVER_NOT_FOUND(HttpStatus.NOT_FOUND, "F002", "등록된 옵저버가 없습니다.");
     private final HttpStatus status;
     private final String code;
     private final String message;

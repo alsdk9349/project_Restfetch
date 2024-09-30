@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member")
@@ -29,4 +30,11 @@ public class Member {
     @NotNull
     @Column(name = "password")
     private String password;
+
+    @Column(name = "token", length = 500)
+    private String token;
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberFetch> fetches = new ArrayList<>();
+
 }

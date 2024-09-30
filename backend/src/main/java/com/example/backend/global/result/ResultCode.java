@@ -17,7 +17,16 @@ public enum ResultCode {
     SIGNUP_OK(HttpStatus.CREATED, "M002", "회원가입에 성공했습니다."),
     EMAIL_SEND_OK(HttpStatus.ACCEPTED, "M003", "이메일 전송에 성공했습니다."),
     VALIDATION_NUMBER_OK(HttpStatus.OK, "M004", "인증번호로 인증이 완료되었습니다."),
-    LOGOUT_OK(HttpStatus.OK , "M005", "로그아웃 했습니다.");
+    LOGOUT_OK(HttpStatus.OK , "M005", "로그아웃 했습니다."),
+
+    // Fetch
+    FETCH_REGISTER_OK(HttpStatus.OK, "F001", "패치 등록 성공했습니다."),
+    FETCH_DELETE_OK(HttpStatus.OK, "F002", "패치 삭제 성공했습니다."),
+
+    // Observer
+    OBSERVER_REGISTER_OK(HttpStatus.OK, "F001", "옵저버 등록 성공했습니다."),
+    OBSERVER_DELETE_OK(HttpStatus.OK, "F002", "옵저버 삭제 성공했습니다.");
+
 
     private final HttpStatus status;
     private final String code;
