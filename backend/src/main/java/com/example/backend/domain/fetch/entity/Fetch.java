@@ -1,6 +1,6 @@
 package com.example.backend.domain.fetch.entity;
 
-import com.example.backend.domain.member.entity.Member;
+import com.example.backend.domain.member.entity.MemberFetch;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -20,10 +20,6 @@ public class Fetch {
     @Column(name = "fetch_id", columnDefinition = "int")
     private long fetchId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
     @NotNull
     @Column(name = "fetch_serial_number", length=255)
     private String fetchSerialNumber;
@@ -34,6 +30,9 @@ public class Fetch {
 
     @Column(name = "battery", columnDefinition = "int")
     private int battery;
+
+    @OneToMany(mappedBy = "fetch", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberFetch> fetches;
 
     @Builder.Default
     @OneToMany(mappedBy = "fetch")

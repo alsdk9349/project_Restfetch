@@ -5,6 +5,8 @@ import com.example.backend.domain.fetch.dto.response.FetchRegisterResponseDto;
 import com.example.backend.domain.fetch.entity.Fetch;
 import com.example.backend.domain.fetch.repository.FetchRepository;
 import com.example.backend.domain.member.entity.Member;
+import com.example.backend.domain.member.entity.MemberFetch;
+import com.example.backend.domain.member.repository.MemberFetchRepository;
 import com.example.backend.domain.member.repository.MemberRepository;
 import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
@@ -24,7 +26,15 @@ public class FetchServiceImpl implements FetchService {
 
     private final FetchRepository fetchRepository;
     private final MemberRepository memberRepository;
+    private final MemberFetchRepository memberFetchRepository;
     private final CookieUtil cookieUtil;
+
+    /**
+     * fetch 등록
+     * @param requestDto
+     * @param request
+     * @return
+     */
 
     @Transactional
     public FetchRegisterResponseDto registerFetch(FetchRegisterRequestDto requestDto, HttpServletRequest request) {
@@ -38,37 +48,70 @@ public class FetchServiceImpl implements FetchService {
         String nickname = requestDto.getNickname();
 
 
-        Optional<Fetch> ByfetchSerialNumber = fetchRepository.findByFetchSerialNumberAndMember_MemberId(fetchSerialNumber, memberId);
-        if(ByfetchSerialNumber.isPresent()) {
-            throw new BusinessException(ErrorCode.FETCH_DUPLICATED);
-        }
+        Optional<Fetch> existFetch = fetchRepository.findByFetchSerialNumber(fetchSerialNumber);
 
-        Fetch fetch = Fetch.builder()
-                .fetchSerialNumber(fetchSerialNumber)
-                .nickname(nickname)
-                .member(member)
-                .build();
 
-        Fetch saveFetch = fetchRepository.save(fetch);
+        if(existFetch.isPresent()) {
+
+            Fetch fetch = existFetch.get();
+            Optional<MemberFetch> existMemberFetch = memberFetchRepository.findByFetchAndMember(fetch, member);
+
+            if(existMemberFetch.isPresent()) {
+
+                throw new BusinessException(ErrorCode.FETCH_DUPLICATED);
+
+            } else {
+
+
+                MemberFetch memberFetch = MemberFetch.builder()
+                        .member(member)
+                        .fetch(fetch)
+                        .build();
+
+                memberFetchRepository.save(memberFetch);
+            }
+        }else {
+            Fetch fetch = Fetch.builder()
+                    .fetchSerialNumber(fetchSerialNumber)
+                    .nickname(nickname)
+                    .build();
+
+            fetchRepository.save(fetch);
+
+            MemberFetch memberFetch = MemberFetch.builder()
+                    .member(member)
+                    .fetch(fetch)
+                    .build();
+
+            memberFetchRepository.save(memberFetch);
+
+            }
 
         return FetchRegisterResponseDto.builder()
-                .memberId(saveFetch.getMember().getMemberId())
-                .fetchId(saveFetch.getFetchId())
-                .nickname(saveFetch.getNickname())
+                .memberId(memberId)
+                .fetchSerialNumber(fetchSerialNumber)
+                .nickname(nickname)
                 .build();
     }
 
     @Transactional
     public void deleteFetch(Long fetchId, HttpServletRequest request) {
         log.info("Deleting fetch request");
+        long memberId = cookieUtil.getUserId(request);
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
 
         Optional<Fetch> fetch = fetchRepository.findById(fetchId);
 
+
         if(!fetch.isPresent()) {
             throw new BusinessException(ErrorCode.FETCH_NOT_FOUND);
+        } else {
+            Optional<MemberFetch> memberFetch = memberFetchRepository.findByFetchAndMember(fetch.get(), member);
+            memberFetchRepository.delete(memberFetch.get());
         }
-
-        fetchRepository.deleteById(fetchId);
     }
 
 }

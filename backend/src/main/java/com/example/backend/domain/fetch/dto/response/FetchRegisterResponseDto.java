@@ -9,7 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class FetchRegisterResponseDto {
     private long memberId;
-    private long fetchId;
     private String nickname;
     private String fetchSerialNumber;
 }
