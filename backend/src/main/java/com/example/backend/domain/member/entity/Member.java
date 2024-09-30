@@ -35,6 +35,6 @@ public class Member {
     private String token;
 
     @OneToMany(mappedBy = "member")
-    private List<MemberFetch> fetches = new ArrayList<>();
+    private List<MemberFetch> fetches;
 
 }

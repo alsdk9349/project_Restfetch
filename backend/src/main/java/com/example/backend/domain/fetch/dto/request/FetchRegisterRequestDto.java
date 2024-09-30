@@ -14,6 +14,7 @@ public class FetchRegisterRequestDto {
     @NotNull(message = "시리얼 번호를 입력해주세요.")
     private String fetchSerialNumber;
 
+    @NotNull(message = "닉네임을 입력해주세요.")
     private String nickname;
 
 

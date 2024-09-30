@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ObserverRepository extends JpaRepository<Observer, Long> {
 
-    Optional<Observer> findByObserverSerialNumberAndFetch_FetchId (String findByObserverSerialNumber, Long fetchId);
-
-
+    Optional<Observer> findByObserverSerialNumber (String observerSerialNumber);
 }

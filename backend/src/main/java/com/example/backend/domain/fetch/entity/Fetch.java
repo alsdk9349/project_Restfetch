@@ -21,7 +21,7 @@ public class Fetch {
     private long fetchId;
 
     @NotNull
-    @Column(name = "fetch_serial_number", length=255)
+    @Column(name = "fetch_serial_number", length=255, unique=true)
     private String fetchSerialNumber;
 
     @NotNull
@@ -34,7 +34,6 @@ public class Fetch {
     @OneToMany(mappedBy = "fetch", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberFetch> fetches;
 
-    @Builder.Default
     @OneToMany(mappedBy = "fetch")
-    private List<Observer> observers = new ArrayList<>();
+    private List<FetchObserver> observers;
 }

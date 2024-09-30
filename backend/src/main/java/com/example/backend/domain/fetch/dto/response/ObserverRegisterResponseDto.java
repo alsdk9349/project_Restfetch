@@ -12,5 +12,6 @@ import java.awt.geom.Point2D;
 public class ObserverRegisterResponseDto {
     private long observerId;
     private String observerSerialNumber;
-    private Point2D.Double location;
+    private Double latitude;
+    private Double longitude;
 }

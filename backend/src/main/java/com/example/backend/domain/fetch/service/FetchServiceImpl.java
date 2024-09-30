@@ -50,7 +50,6 @@ public class FetchServiceImpl implements FetchService {
 
         Optional<Fetch> existFetch = fetchRepository.findByFetchSerialNumber(fetchSerialNumber);
 
-
         if(existFetch.isPresent()) {
 
             Fetch fetch = existFetch.get();
@@ -71,10 +70,12 @@ public class FetchServiceImpl implements FetchService {
                 memberFetchRepository.save(memberFetch);
             }
         }else {
+
             Fetch fetch = Fetch.builder()
                     .fetchSerialNumber(fetchSerialNumber)
                     .nickname(nickname)
                     .build();
+            log.info("2{}", fetch);
 
             fetchRepository.save(fetch);
 
@@ -94,6 +95,12 @@ public class FetchServiceImpl implements FetchService {
                 .build();
     }
 
+    /**
+     * fetch 삭제
+     * @param fetchId
+     * @param request
+     */
+
     @Transactional
     public void deleteFetch(Long fetchId, HttpServletRequest request) {
         log.info("Deleting fetch request");
@@ -112,6 +119,7 @@ public class FetchServiceImpl implements FetchService {
             Optional<MemberFetch> memberFetch = memberFetchRepository.findByFetchAndMember(fetch.get(), member);
             memberFetchRepository.delete(memberFetch.get());
         }
+
     }
 
 }

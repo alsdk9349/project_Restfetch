@@ -22,10 +22,12 @@ public enum ResultCode {
     // Fetch
     FETCH_REGISTER_OK(HttpStatus.OK, "F001", "패치 등록 성공했습니다."),
     FETCH_DELETE_OK(HttpStatus.OK, "F002", "패치 삭제 성공했습니다."),
+    SEARCH_FETCH_OK(HttpStatus.OK, "F003", "패치 조회 성공했습니다."),
 
     // Observer
-    OBSERVER_REGISTER_OK(HttpStatus.OK, "F001", "옵저버 등록 성공했습니다."),
-    OBSERVER_DELETE_OK(HttpStatus.OK, "F002", "옵저버 삭제 성공했습니다.");
+    OBSERVER_REGISTER_OK(HttpStatus.OK, "O001", "옵저버 등록 성공했습니다."),
+    OBSERVER_DELETE_OK(HttpStatus.OK, "O002", "옵저버 삭제 성공했습니다."),
+    SEARCH_OBSERVER_OK(HttpStatus.OK, "O003", "옵저버 조회 성공했습니다.");
 
 
     private final HttpStatus status;
