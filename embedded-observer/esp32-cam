@@ -1,0 +1,149 @@
+#include "esp_camera.h"
+#include "BLEDevice.h"
+#include "BLE2902.h"  // Notify 기능을 위한 헤더 파일 추가
+
+// AI Thinker ESP32-CAM 핀 설정
+#define PWDN_GPIO_NUM     32
+#define RESET_GPIO_NUM    -1
+#define XCLK_GPIO_NUM     0
+#define SIOD_GPIO_NUM     26
+#define SIOC_GPIO_NUM     27
+#define Y9_GPIO_NUM       35
+#define Y8_GPIO_NUM       34
+#define Y7_GPIO_NUM       39
+#define Y6_GPIO_NUM       36
+#define Y5_GPIO_NUM       21
+#define Y4_GPIO_NUM       19
+#define Y3_GPIO_NUM       18
+#define Y2_GPIO_NUM        5
+#define VSYNC_GPIO_NUM    25
+#define HREF_GPIO_NUM     23
+#define PCLK_GPIO_NUM     22
+
+#define FLASH_GPIO_NUM    4  // 플래시(LED) 핀 설정
+
+BLEServer *pServer;
+BLECharacteristic *pCharacteristic;
+BLEAdvertising *pAdvertising;
+
+#define SERVICE_UUID "12345678-1234-5678-1234-56789abcdef0" // 서비스 UUID
+#define CHARACTERISTIC_UUID "abcdef01-1234-5678-1234-56789abcdef1" // 특성 UUID
+
+// BLE 서버 콜백 (연결 상태 관리)
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      Serial.println("BLE Client Connected");
+    }
+
+    void onDisconnect(BLEServer* pServer) {
+      Serial.println("BLE Client Disconnected, restarting advertising...");
+      pAdvertising->start();  // BLE 광고 다시 시작
+    }
+};
+
+void setup() {
+  Serial.begin(115200);
+
+  // 플래시 핀을 출력으로 설정 (필요 시 활성화)
+  pinMode(FLASH_GPIO_NUM, OUTPUT);
+  digitalWrite(FLASH_GPIO_NUM, LOW);  // 시작 시 플래시를 끔
+  
+  // 블루투스 초기화
+  BLEDevice::init("ESP32-CAM");  // 장치 이름 설정
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());  // 콜백 설정
+  
+  // BLE 서비스 및 특성 생성
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+  
+  // BLE 특성 생성 및 Notify 기능 활성화
+  pCharacteristic = pService->createCharacteristic(
+                      CHARACTERISTIC_UUID,
+                      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY  // Notify 활성화
+                    );
+
+  // Notify를 위한 BLE2902 디스크립터 추가
+  pCharacteristic->addDescriptor(new BLE2902());  // Notify 기능 활성화
+
+  pService->start();  // 서비스 시작
+
+  // BLE 광고 설정 및 시작 (타임아웃 방지)
+  pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->setMinPreferred(0x06);  // 최소 연결 인터벌 설정 (7.5ms)
+  pAdvertising->setMaxPreferred(0x12);  // 최대 연결 인터벌 설정 (22.5ms)
+  pAdvertising->setMinPreferred(0x00);  // 무한 광고 모드 설정 (연결 끊기 방지)
+  pAdvertising->start();  // BLE 광고 시작
+  Serial.println("BLE Advertising started");
+
+  // 카메라 설정
+  camera_config_t config;
+  config.ledc_channel = LEDC_CHANNEL_0;
+  config.ledc_timer = LEDC_TIMER_0;
+  config.pin_d0 = Y2_GPIO_NUM;
+  config.pin_d1 = Y3_GPIO_NUM;
+  config.pin_d2 = Y4_GPIO_NUM;
+  config.pin_d3 = Y5_GPIO_NUM;
+  config.pin_d4 = Y6_GPIO_NUM;
+  config.pin_d5 = Y7_GPIO_NUM;
+  config.pin_d6 = Y8_GPIO_NUM;
+  config.pin_d7 = Y9_GPIO_NUM;
+  config.pin_xclk = XCLK_GPIO_NUM;
+  config.pin_pclk = PCLK_GPIO_NUM;
+  config.pin_vsync = VSYNC_GPIO_NUM;
+  config.pin_href = HREF_GPIO_NUM;
+  config.pin_sccb_sda = SIOD_GPIO_NUM;
+  config.pin_sccb_scl = SIOC_GPIO_NUM;
+  config.pin_pwdn = PWDN_GPIO_NUM;
+  config.pin_reset = RESET_GPIO_NUM;
+  config.xclk_freq_hz = 20000000;
+  config.pixel_format = PIXFORMAT_JPEG;
+  
+  // 해상도 및 품질 설정
+  config.frame_size = FRAMESIZE_QVGA;  
+  config.jpeg_quality = 15;  
+  config.fb_count = 1;
+
+  if (esp_camera_init(&config) != ESP_OK) {
+    Serial.println("Camera init failed");
+    return;
+  }
+  Serial.println("Camera init successful");
+}
+
+void loop() {
+  // 1분(60초) 대기 후 사진 촬영 시작
+  delay(60000);  // 60초 대기
+  
+  // 플래시 켜기 (필요 시 활성화)
+  digitalWrite(FLASH_GPIO_NUM, HIGH);
+  delay(100);  // 플래시를 켜고 잠시 대기
+  
+  camera_fb_t *fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    digitalWrite(FLASH_GPIO_NUM, LOW);  // 사진 촬영 실패 시 플래시 끔
+    return;
+  }
+
+  // 이미지 데이터를 청크 단위로 전송 (BLE 패킷 크기 제한 방지)
+  size_t len = fb->len;
+  uint8_t *buf = fb->buf;
+  const size_t chunkSize = 512;  // BLE 패킷 크기에 맞춘 청크 크기 설정
+
+  while (len > 0) {
+    size_t sendSize = (len > chunkSize) ? chunkSize : len;
+    pCharacteristic->setValue(buf, sendSize);
+    pCharacteristic->notify();  // 청크 데이터 전송
+    buf += sendSize;
+    len -= sendSize;
+    delay(20);  // 전송 사이에 약간의 딜레이 추가
+  }
+
+  esp_camera_fb_return(fb);  // 프레임 버퍼 해제
+  
+  // 플래시 끄기 (필요 시 활성화)
+  digitalWrite(FLASH_GPIO_NUM, LOW);
+  Serial.println("Image data notified");
+
+  // 1분 대기 후 다시 촬영 (루프)
+}

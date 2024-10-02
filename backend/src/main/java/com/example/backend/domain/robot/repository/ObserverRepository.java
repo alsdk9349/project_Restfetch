@@ -1,7 +1,7 @@
-package com.example.backend.domain.fetch.repository;
+package com.example.backend.domain.robot.repository;
 
 
-import com.example.backend.domain.fetch.entity.Observer;
+import com.example.backend.domain.robot.entity.Observer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ObserverRepository extends JpaRepository<Observer, Long> {
 
-    Optional<Observer> findByObserverSerialNumberAndFetch_FetchId (String findByObserverSerialNumber, Long fetchId);
-
-
+    Optional<Observer> findByObserverSerialNumber (String observerSerialNumber);
 }

@@ -1,10 +1,8 @@
-package com.example.backend.domain.fetch.dto.response;
+package com.example.backend.domain.robot.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.awt.geom.Point2D;
 
 @Builder
 @Getter
@@ -12,5 +10,6 @@ import java.awt.geom.Point2D;
 public class ObserverRegisterResponseDto {
     private long observerId;
     private String observerSerialNumber;
-    private Point2D.Double location;
+    private Double latitude;
+    private Double longitude;
 }

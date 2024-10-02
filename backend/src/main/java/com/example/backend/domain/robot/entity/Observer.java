@@ -1,12 +1,10 @@
-package com.example.backend.domain.fetch.entity;
+package com.example.backend.domain.robot.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "observer")
@@ -25,10 +23,13 @@ public class Observer {
     private String observerSerialNumber;
 
     @NotNull
-    @Column(name = "location", columnDefinition = "point")
-    private Point2D.Double location;
+    @Column(name = "latitude", columnDefinition = "double")
+    private double latitude;
 
-    @ManyToOne
-    @JoinColumn(name="fetch_id", columnDefinition = "int unsigned")
-    private Fetch fetch;
+    @NotNull
+    @Column(name = "longitude", columnDefinition = "double")
+    private double longitude;
+
+    @OneToMany(mappedBy = "observer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FetchObserver> observers;
 }

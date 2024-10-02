@@ -1,6 +1,6 @@
 package com.example.backend.domain.member.entity;
 
-import com.example.backend.domain.fetch.entity.Fetch;
+import com.example.backend.domain.robot.entity.Fetch;
 import jakarta.persistence.*;
 import lombok.*;
 
