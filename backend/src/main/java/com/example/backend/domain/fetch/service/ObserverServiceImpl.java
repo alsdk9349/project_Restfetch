@@ -72,6 +72,8 @@ public class ObserverServiceImpl implements ObserverService {
                     .observer(observer)
                     .build();
 
+            fetchObserverRepository.save(fetchObserver);
+
         } else {
 
             Observer observer = Observer.builder()
@@ -129,6 +131,11 @@ public class ObserverServiceImpl implements ObserverService {
         }
     }
 
+    /**
+     * 패치에 등록된 옵저버 조회
+     * @param fetchId
+     * @return
+     */
     @Override
     public List<ObserverGetResponseDto> getObserver(Long fetchId) {
 

@@ -130,6 +130,11 @@ public class FetchServiceImpl implements FetchService {
         }
     }
 
+    /**
+     * 패치 조회
+     * @param request
+     * @return
+     */
     public List<FetchGetResponseDto> getFetch(HttpServletRequest request) {
         log.info("Fetch Get request");
 
