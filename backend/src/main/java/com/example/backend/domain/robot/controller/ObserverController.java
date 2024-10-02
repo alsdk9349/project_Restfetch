@@ -43,4 +43,11 @@ public class ObserverController {
         ResultResponse resultResponse = ResultResponse.of(ResultCode.REPORT_NEW_OK, reportResponseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+    @GetMapping("/{observer_id}/reports")
+    public ResponseEntity<?> getReports(@PathVariable("observer_id") Long observer_id) {
+
+        ResultResponse resultResponse = ResultResponse.of(ResultCode.REPORT_GET_OK);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
 }
