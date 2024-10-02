@@ -1,6 +1,7 @@
 package com.example.backend.domain.fetch.service;
 
 import com.example.backend.domain.fetch.dto.request.FetchRegisterRequestDto;
+import com.example.backend.domain.fetch.dto.response.FetchGetResponseDto;
 import com.example.backend.domain.fetch.dto.response.FetchRegisterResponseDto;
 import com.example.backend.domain.fetch.entity.Fetch;
 import com.example.backend.domain.fetch.repository.FetchRepository;
@@ -17,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -125,7 +128,29 @@ public class FetchServiceImpl implements FetchService {
             }
             memberFetchRepository.delete(memberFetch.get());
         }
+    }
 
+    public List<FetchGetResponseDto> getFetch(HttpServletRequest request) {
+        log.info("Fetch Get request");
+
+        long memberId = cookieUtil.getUserId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<MemberFetch> fetches = memberFetchRepository.findByMember(member);
+
+        List<FetchGetResponseDto> fetchList = new ArrayList<>();
+        for (MemberFetch memberFetch : fetches) {
+            Fetch fetch = memberFetch.getFetch();
+            FetchGetResponseDto fetchGetResponseDto = FetchGetResponseDto.builder()
+                    .fetchId(fetch.getFetchId())
+                    .fetchName(fetch.getNickname())
+                    .fetchSerialNumber(fetch.getFetchSerialNumber())
+                    .build();
+            fetchList.add(fetchGetResponseDto);
+        }
+
+        return fetchList;
     }
 
 }

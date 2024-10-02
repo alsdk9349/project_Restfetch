@@ -1,6 +1,7 @@
 package com.example.backend.domain.fetch.controller;
 
 import com.example.backend.domain.fetch.dto.request.FetchRegisterRequestDto;
+import com.example.backend.domain.fetch.dto.response.FetchGetResponseDto;
 import com.example.backend.domain.fetch.dto.response.FetchRegisterResponseDto;
 import com.example.backend.domain.fetch.service.FetchService;
 import com.example.backend.global.result.ResultCode;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,7 +37,11 @@ public class FetchController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-//    @GetMapping("")
-//    public ResponseEntity<?> fetch(HttpServletRequest request) {}
+    @GetMapping("/get")
+    public ResponseEntity<?> fetch(HttpServletRequest request) {
+        List<FetchGetResponseDto> fetchGetResponseDtos = fetchService.getFetch(request);
+        ResultResponse response = ResultResponse.of(ResultCode.FETCH_SEARCH_OK, fetchGetResponseDtos);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }
