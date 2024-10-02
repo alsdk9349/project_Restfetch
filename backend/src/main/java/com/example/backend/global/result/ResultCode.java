@@ -27,8 +27,10 @@ public enum ResultCode {
     // Observer
     OBSERVER_REGISTER_OK(HttpStatus.OK, "S009", "옵저버 등록 성공했습니다."),
     OBSERVER_DELETE_OK(HttpStatus.OK, "S010", "옵저버 삭제 성공했습니다."),
-    OBSERVER_SEARCH_OK(HttpStatus.OK, "S011", "옵저버 조회 성공했습니다.");
+    OBSERVER_SEARCH_OK(HttpStatus.OK, "S011", "옵저버 조회 성공했습니다."),
 
+    // Report
+    REPORT_NEW_OK(HttpStatus.OK, "S012", "기록 받기 성공했습니다.");
 
     private final HttpStatus status;
     private final String code;
