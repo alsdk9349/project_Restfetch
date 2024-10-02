@@ -37,9 +37,9 @@ public class ObserverController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @PostMapping("/{observer_id}/report")
-    public ResponseEntity<?> newReport(@PathVariable("observer_id") Long observer_id, @RequestBody ReportRequestDto requestDto) {
-        ReportResponseDto reportResponseDto =  reportService.newReport(observer_id, requestDto);
+    @PostMapping("/report")
+    public ResponseEntity<?> newReport(@RequestBody ReportRequestDto requestDto) {
+        ReportResponseDto reportResponseDto =  reportService.newReport(requestDto);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.REPORT_NEW_OK, reportResponseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }

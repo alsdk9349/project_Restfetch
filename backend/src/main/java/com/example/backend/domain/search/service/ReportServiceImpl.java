@@ -20,12 +20,12 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final ObserverRepository observerRepository;
 
-    public ReportResponseDto newReport(Long observerId, ReportRequestDto requestDto) {
+    public ReportResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
 
         String picture = requestDto.getPicture();
 
-        Observer observer = observerRepository.findById(observerId)
+        Observer observer = observerRepository.findByObserverSerialNumber(requestDto.getObserverSerialNumber())
                 .orElseThrow(() -> new BusinessException(ErrorCode.OBSERVER_NOT_FOUND));
 
         Report report = Report.builder()
@@ -37,16 +37,13 @@ public class ReportServiceImpl implements ReportService {
         reportRepository.save(report);
 
         String observerSerialNumber = observer.getObserverSerialNumber();
-        Double latitude = observer.getLatitude();
-        Double longitude = observer.getLongitude();
+        Long observerId = observer.getObserver_id();
 
         return ReportResponseDto.builder()
                 .reportId(report.getId())
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
                 .picture(picture)
-                .longitude(longitude)
-                .latitude(latitude)
                 .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
                 .build();

@@ -17,8 +17,6 @@ public class ReportResponseDto {
     private long observerId;
     private String observerSerialNumber;
     private String picture;
-    private Double latitude;
-    private Double longitude;
     private LocalDateTime createdAt;
     private boolean isPicked;
 

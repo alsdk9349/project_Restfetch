@@ -5,5 +5,5 @@ import com.example.backend.domain.search.dto.response.ReportResponseDto;
 
 public interface ReportService {
 
-    ReportResponseDto newReport(Long observerId, ReportRequestDto requestDto);
+    ReportResponseDto newReport(ReportRequestDto requestDto);
 }
