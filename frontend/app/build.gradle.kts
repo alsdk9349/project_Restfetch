@@ -45,6 +45,7 @@ android {
 }
 
 dependencies {
+    //ui library
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.navigation.compose)
     val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
@@ -52,12 +53,19 @@ dependencies {
     androidTestImplementation(composeBom)
     implementation(libs.androidx.activity.compose)
 
+    //di library
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
 
+    //preview library
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
 
+    //remote library
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    //google login library
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)

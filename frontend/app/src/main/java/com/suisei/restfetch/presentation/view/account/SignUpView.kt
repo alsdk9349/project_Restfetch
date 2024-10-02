@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +35,7 @@ import com.suisei.restfetch.presentation.viewmodel.AccountViewModel
 fun SignUpScreen() {
     val viewModel: AccountViewModel = viewModel()
 
-    val verifyState = viewModel.verifyEmailState.collectAsState()
+    val verifyState = viewModel.verifyState.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var code by remember { mutableStateOf("") }
@@ -64,23 +63,33 @@ fun SignUpScreen() {
             AuthCodeInput(
                 code = code, onCodeChange = {
                     code = it
-                    if (code == "") viewModel.sendVerifyEmailIntent(VerifyEmailIntent.LoadRequestResendButton)
-                    else if (verifyState.value != VerifyEmailState.WaitRequestCode) viewModel.sendVerifyEmailIntent(
-                        VerifyEmailIntent.LoadRequestVerifyButton
+                    if (verifyState.value != VerifyEmailState.WaitRequest && code == "") viewModel.sendVerifyIntent(
+                        VerifyEmailIntent.LoadResendButton
+                    )
+                    else if (verifyState.value != VerifyEmailState.WaitRequest && code != "") viewModel.sendVerifyIntent(
+                        VerifyEmailIntent.LoadVerifyButton
                     )
                 },
                 enabled = verifyState.value != VerifyEmailState.VerifyComplete
             )
 
             when (val state = verifyState.value) {
-                VerifyEmailState.WaitRequestCode -> VerifyNavigationButton(
+                VerifyEmailState.WaitRequest -> VerifyNavigationButton(
                     "인증 번호 요청",
-                    { viewModel.sendVerifyEmailIntent(VerifyEmailIntent.LoadRequestResendButton) })
+                    { viewModel.requestCode(email) })
 
-                VerifyEmailState.WaitEnterCode -> VerifyNavigationButton("재전송", { })
-                VerifyEmailState.WaitRequestVerify -> VerifyNavigationButton(
+                VerifyEmailState.WaitCode -> VerifyNavigationButton(
+                    "재전송",
+                    { viewModel.requestCode(email) })
+
+                VerifyEmailState.WaitVerification -> VerifyNavigationButton(
                     "인증 요청",
-                    { viewModel.sendVerifyEmailIntent(VerifyEmailIntent.LoadVerifyComplete) })
+                    {
+                        viewModel.verifyCode(
+                            email,
+                            code
+                        )
+                    })
 
                 VerifyEmailState.VerifyComplete -> VerifyNavigationButton(
                     "인증 완료",
@@ -97,7 +106,7 @@ fun SignUpScreen() {
             onPasswordChange = { passwordConfirm = it })
         NicknameInput(nickname = nickname, onNicknameChange = { nickname = it })
 
-        CreateButton()
+        CreateButton { viewModel.createAccount(email, password, nickname) }
     }
 }
 
@@ -131,7 +140,6 @@ fun NicknameInput(nickname: String, onNicknameChange: (String) -> Unit) {
     OutlinedTextField(
         value = nickname,
         onValueChange = onNicknameChange,
-        visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         label = { Text(text = "Nickname") },
         textStyle = TextStyle.Default.copy(fontSize = 20.sp),
@@ -141,8 +149,8 @@ fun NicknameInput(nickname: String, onNicknameChange: (String) -> Unit) {
 }
 
 @Composable
-fun CreateButton() {
-    BasicButton(onClick = { /*TODO*/ }, contentPadding = PaddingValues(12.dp)) {
+fun CreateButton(onClick: () -> Unit) {
+    BasicButton(onClick = onClick, contentPadding = PaddingValues(12.dp)) {
         Text("계정 생성", fontSize = 22.sp, color = Color.DarkGray, textAlign = TextAlign.Center)
     }
 }

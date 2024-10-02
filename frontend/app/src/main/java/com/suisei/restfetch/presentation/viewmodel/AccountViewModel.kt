@@ -14,6 +14,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.suisei.restfetch.data.remote.ServerClient
+import com.suisei.restfetch.data.remote.UserAPI
 import com.suisei.restfetch.presentation.intent.AccountIntent
 import com.suisei.restfetch.presentation.intent.VerifyEmailIntent
 import com.suisei.restfetch.presentation.state.AccountViewState
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,21 +38,23 @@ class AccountViewModel @Inject constructor() : ViewModel() {
     val viewState: StateFlow<AccountViewState> get() = _viewState
     private val accountIntent = Channel<AccountIntent>()
 
-    private val _verifyEmailState = MutableStateFlow<VerifyEmailState>(VerifyEmailState.WaitRequestCode)
-    val verifyEmailState: StateFlow<VerifyEmailState> get() = _verifyEmailState
-    private val verifyEmailIntent = Channel<VerifyEmailIntent>()
+    private val _verifyState = MutableStateFlow<VerifyEmailState>(VerifyEmailState.WaitRequest)
+    val verifyState: StateFlow<VerifyEmailState> get() = _verifyState
+    private val verifyIntent = Channel<VerifyEmailIntent>()
+
+    private val retrofit = ServerClient.userRetrofit
 
     init {
         handleViewIntent()
-        handleVerifyEmailIntent()
+        handleVerifyIntent()
     }
 
     fun sendViewIntent(intent: AccountIntent) = viewModelScope.launch(Dispatchers.IO) {
         accountIntent.send(intent)
     }
 
-    fun sendVerifyEmailIntent(intent: VerifyEmailIntent) = viewModelScope.launch(Dispatchers.IO) {
-        verifyEmailIntent.send(intent)
+    fun sendVerifyIntent(intent: VerifyEmailIntent) = viewModelScope.launch(Dispatchers.IO) {
+        verifyIntent.send(intent)
     }
 
     private fun handleViewIntent() {
@@ -70,34 +75,131 @@ class AccountViewModel @Inject constructor() : ViewModel() {
 
     private fun loadSignUp() {
         _viewState.value = AccountViewState.SignUp
+        _verifyState.value = VerifyEmailState.WaitRequest
     }
 
     private fun loadForgotPassword() {
         _viewState.value = AccountViewState.ForgotPassword
     }
 
-    private fun handleVerifyEmailIntent() {
+    private fun handleVerifyIntent() {
         viewModelScope.launch(Dispatchers.IO) {
-            verifyEmailIntent.consumeAsFlow().collect { intent ->
+            verifyIntent.consumeAsFlow().collect { intent ->
                 when (intent) {
-                    VerifyEmailIntent.LoadRequestResendButton -> loadRequestResendButton()
-                    VerifyEmailIntent.LoadRequestVerifyButton -> loadRequestVerifyButton()
-                    VerifyEmailIntent.LoadVerifyComplete -> loadCompleteText()
+                    VerifyEmailIntent.LoadResendButton -> loadResendButton()
+                    VerifyEmailIntent.LoadVerifyButton -> loadVerifyButton()
+                    VerifyEmailIntent.LoadCompleteText -> loadCompleteText()
                 }
             }
         }
     }
 
-    private fun loadRequestResendButton() {
-        _verifyEmailState.value = VerifyEmailState.WaitEnterCode
+    private fun loadResendButton() {
+        _verifyState.value = VerifyEmailState.WaitCode
     }
 
-    private fun loadRequestVerifyButton() {
-        _verifyEmailState.value = VerifyEmailState.WaitRequestVerify
+    private fun loadVerifyButton() {
+        _verifyState.value = VerifyEmailState.WaitVerification
     }
 
     private fun loadCompleteText() {
-        _verifyEmailState.value = VerifyEmailState.VerifyComplete
+        _verifyState.value = VerifyEmailState.VerifyComplete
+    }
+
+    fun requestCode(email: String) {
+
+        val body = mapOf("email" to email)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = retrofit.requestCode(body)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        if (responseBody!!.code == UserAPI.SendSuccess) {
+                            sendVerifyIntent(VerifyEmailIntent.LoadResendButton)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.message?.let { Log.e("TEST", it) }
+            }
+        }
+    }
+
+    fun verifyCode(email: String, code: String) {
+        val body = mapOf("email" to email, "verificationCode" to code)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = retrofit.verifyCode(body)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+
+                        if(responseBody!!.code == UserAPI.VerifySuccess) {
+                            sendVerifyIntent(VerifyEmailIntent.LoadCompleteText)
+                        }
+                    }
+                }
+            } catch(e: Exception) {
+                e.message?.let { Log.e("TEST", it) }
+            }
+
+        }
+    }
+
+    fun createAccount(email: String, password: String, nickname: String) {
+        val body = mapOf("email" to email, "password" to password, "nickname" to nickname)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = retrofit.signup(body)
+
+            withContext(Dispatchers.Main) {
+                if(response.isSuccessful) {
+                    val responseBody = response.body()
+
+                    if(responseBody!!.code == UserAPI.CreateSuccess) {
+                        sendViewIntent(AccountIntent.LoadLogin)
+                    }
+                }
+            }
+        }
+    }
+
+    fun login(email: String, password: String, onSuccess: (accessToken: String, refreshToken: String) -> Unit) {
+        val body = mapOf("email" to email, "password" to password)
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = retrofit.login(body)
+            withContext(Dispatchers.Main) {
+                if(response.isSuccessful) {
+                    val responseHeaders = response.headers()
+                    val responseBody = response.body()
+                    val values = responseHeaders.values("Set-Cookie")
+
+                    val keys = responseBody!!.toString()
+                    Log.e("TEST", keys)
+
+
+                    val userData = response.body()!!.data
+
+                    val accessToken = extractToken("accessToken", values[0])
+                    val refreshToken = extractToken("refreshToken", values[1])
+
+                    if(responseBody!!.code == UserAPI.LoginSuccess) {
+                        onSuccess(accessToken, refreshToken)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun extractToken(tokenName: String, cookieString: String): String {
+        val regex = Regex("$tokenName=([^;]+)")
+        val accessKey = regex.find(cookieString)
+        return accessKey?.groups?.get(1)?.value!!
     }
 
     fun requestGoogleAuth(context: Context) {

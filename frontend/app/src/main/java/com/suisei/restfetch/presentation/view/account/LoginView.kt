@@ -1,5 +1,6 @@
 package com.suisei.restfetch.presentation.view.account
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,9 @@ fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
+    val viewModel: AccountViewModel = viewModel()
+
     AccountTemplate {
         LogoImage()
         Spacer(modifier = Modifier.height(24.dp))
@@ -57,7 +61,22 @@ fun LoginScreen(navController: NavController) {
             }
         }
 
-        EmailLoginButton(navController)
+        EmailLoginButton {
+            viewModel.login(email, password) { accessToken, refreshToken ->
+                val sharedPreferences = context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
+                with(sharedPreferences.edit()) {
+                    putString("accessToken", accessToken)
+                    putString("refreshToken", refreshToken)
+                    apply()
+                }
+
+                navController.navigate("main_screen") {
+                    popUpTo("login_screen") {
+                        inclusive = true
+                    }
+                }
+            }
+        }
         GoogleLoginButton()
     }
 }
@@ -100,15 +119,9 @@ fun LoadViewButton(text: String, accountIntent: AccountIntent) {
 }
 
 @Composable
-fun EmailLoginButton(navController: NavController) {
+fun EmailLoginButton(onClick: () -> Unit) {
 
-    OutlinedButton(onClick = {
-        navController.navigate("main_screen") {
-            popUpTo("login_screen") {
-                inclusive = true
-            }
-        }
-    }) {
+    OutlinedButton(onClick = onClick) {
         Text(
             text = "Login",
             fontSize = 24.sp,
