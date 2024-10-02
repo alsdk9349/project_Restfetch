@@ -93,7 +93,7 @@ public class securityConfig {
         config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
         // todo : 여기에 허용할 헤더 목록
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
