@@ -16,7 +16,7 @@ public enum ResultCode {
     LOGIN_OK(HttpStatus.OK, "M001", "로그인 했습니다."),
     SIGNUP_OK(HttpStatus.CREATED, "M002", "회원가입에 성공했습니다."),
     EMAIL_SEND_OK(HttpStatus.ACCEPTED, "M003", "이메일 전송에 성공했습니다."),
-    VALIDATION_NUMBER_OK(HttpStatus.OK, "M004", "인증번호로 인증이 완료되었습니다."),
+    VALIDATION_NUMBER_OK(HttpStatus.OK, "M004", "이메일 인증이 성공했습니다."),
     LOGOUT_OK(HttpStatus.OK , "M005", "로그아웃 했습니다."),
 
     // Fetch

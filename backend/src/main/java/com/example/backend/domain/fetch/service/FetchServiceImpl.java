@@ -89,7 +89,6 @@ public class FetchServiceImpl implements FetchService {
             }
 
         return FetchRegisterResponseDto.builder()
-                .memberId(memberId)
                 .fetchSerialNumber(fetchSerialNumber)
                 .nickname(nickname)
                 .build();
@@ -112,10 +111,10 @@ public class FetchServiceImpl implements FetchService {
 
         Optional<Fetch> fetch = fetchRepository.findById(fetchId);
 
-
-        if(!fetch.isPresent()) {
+        if(fetch.isEmpty()) {
             throw new BusinessException(ErrorCode.FETCH_NOT_FOUND);
         } else {
+            log.info("fetch get{}", fetch.get());
             Optional<MemberFetch> memberFetch = memberFetchRepository.findByFetchAndMember(fetch.get(), member);
             memberFetchRepository.delete(memberFetch.get());
         }

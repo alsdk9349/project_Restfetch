@@ -27,11 +27,14 @@ public class FetchController {
 
     }
 
-    @PostMapping("/{fetch_id}/delete")
+    @DeleteMapping("/{fetch_id}")
     public ResponseEntity<?> deleteFetch(@PathVariable Long fetch_id, HttpServletRequest request) {
         fetchService.deleteFetch(fetch_id, request);
         ResultResponse response =  ResultResponse.of(ResultCode.FETCH_DELETE_OK, fetch_id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+//    @GetMapping("")
+//    public ResponseEntity<?> fetch(HttpServletRequest request) {}
 
 }

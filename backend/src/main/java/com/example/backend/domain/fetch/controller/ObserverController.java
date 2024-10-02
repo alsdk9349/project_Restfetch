@@ -26,7 +26,7 @@ public class ObserverController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @PostMapping("/{fetch_id}/{observer_id}/delete")
+    @DeleteMapping("/{fetch_id}/{observer_id}")
     public ResponseEntity<?> deleteObserver(@PathVariable("fetch_id") Long fetch_id, @PathVariable("observer_id") Long observer_id) {
         observerService.deleteObserver(fetch_id, observer_id);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.OBSERVER_DELETE_OK, observer_id);

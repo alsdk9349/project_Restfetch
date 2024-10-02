@@ -17,9 +17,8 @@ public enum ErrorCode {
     MEMBER_DUPLICATED(HttpStatus.CONFLICT, "M002", "이미 존재하는 회원입니다."),
     MEMBER_DIFF_PASSWORD(HttpStatus.BAD_REQUEST, "M003", "비밀번호가 일치하지 않습니다."),
     MEMBER_INVALID_CODE(HttpStatus.BAD_REQUEST, "M004", "유효하지 않은 인증번호입니다."),
-    MEMBER_INVALID_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "M005", "Runtime : 이메일 전송에 실패하였습니다."),
-    MEMBER_COOKIE_NOT_FOUND(HttpStatus.NOT_FOUND, "M006", "쿠키를 찾지 못했습니다"),
-    MEMBER_NOT_ADMIN(HttpStatus.FORBIDDEN, "M007", "관리자가 아닌 사용자 입니다."),
+    MEMBER_COOKIE_NOT_FOUND(HttpStatus.NOT_FOUND, "M005", "쿠키를 찾지 못했습니다"),
+    MEMBER_NOT_ADMIN(HttpStatus.FORBIDDEN, "M006", "관리자가 아닌 사용자 입니다."),
 
     // Email
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "E001", "이메일 전송에 실패했습니다."),
