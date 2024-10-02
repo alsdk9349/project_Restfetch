@@ -33,4 +33,5 @@ public class ObserverController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
+
 }

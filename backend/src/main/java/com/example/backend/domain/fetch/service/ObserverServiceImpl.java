@@ -1,6 +1,8 @@
 package com.example.backend.domain.fetch.service;
 
 import com.example.backend.domain.fetch.dto.request.ObserverRegisterRequestDto;
+import com.example.backend.domain.fetch.dto.response.FetchGetResponseDto;
+import com.example.backend.domain.fetch.dto.response.ObserverGetResponseDto;
 import com.example.backend.domain.fetch.dto.response.ObserverRegisterResponseDto;
 import com.example.backend.domain.fetch.entity.Fetch;
 import com.example.backend.domain.fetch.entity.FetchObserver;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -125,4 +129,28 @@ public class ObserverServiceImpl implements ObserverService {
         }
     }
 
+    @Override
+    public List<ObserverGetResponseDto> getObserver(Long fetchId) {
+
+        Fetch fetch = fetchRepository.findById(fetchId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.FETCH_NOT_FOUND));
+
+        List<FetchObserver> observers = fetchObserverRepository.findByFetch(fetch);
+
+        List<ObserverGetResponseDto> observerList = new ArrayList<>();
+        for (FetchObserver fetchObserver : observers) {
+            Observer observer = fetchObserver.getObserver();
+            ObserverGetResponseDto observerGetResponseDto = ObserverGetResponseDto.builder()
+                    .observerId(observer.getObserver_id())
+                    .observerSerialNumber(observer.getObserverSerialNumber())
+                    .longitude(observer.getLatitude())
+                    .latitude(observer.getLatitude())
+                    .build();
+
+            observerList.add(observerGetResponseDto);
+        }
+
+        return observerList;
+
+    }
 }
