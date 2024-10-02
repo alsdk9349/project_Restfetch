@@ -116,6 +116,9 @@ public class FetchServiceImpl implements FetchService {
         } else {
             log.info("fetch get{}", fetch.get());
             Optional<MemberFetch> memberFetch = memberFetchRepository.findByFetchAndMember(fetch.get(), member);
+            if(memberFetch.isEmpty()) {
+                throw new BusinessException(ErrorCode.FETCH_NOT_FOUND);
+            }
             memberFetchRepository.delete(memberFetch.get());
         }
 
