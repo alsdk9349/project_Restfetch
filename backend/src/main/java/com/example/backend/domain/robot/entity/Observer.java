@@ -1,9 +1,11 @@
 package com.example.backend.domain.robot.entity;
 
+import com.example.backend.domain.search.entity.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.awt.*;
 import java.util.List;
 
 @Entity
@@ -32,4 +34,7 @@ public class Observer {
 
     @OneToMany(mappedBy = "observer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FetchObserver> observers;
+    
+    @OneToMany(mappedBy = "observer")
+    private List<Report> reports;
 }
