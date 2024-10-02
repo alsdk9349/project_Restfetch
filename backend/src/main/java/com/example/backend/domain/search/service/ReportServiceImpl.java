@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -47,5 +50,17 @@ public class ReportServiceImpl implements ReportService {
                 .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
                 .build();
+    }
+
+    public List<ReportResponseDto> getReports(Long observerId) {
+        log.info("Get reports");
+
+        Observer observer = observerRepository.findById(observerId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.OBSERVER_NOT_FOUND));
+
+        List<Report> reports = reportRepository.findByObserver(observer);
+
+        List<ReportResponseDto> reportResponseDtos = new ArrayList<>();
+        return reportResponseDtos;
     }
 }

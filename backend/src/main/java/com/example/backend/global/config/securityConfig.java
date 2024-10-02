@@ -77,6 +77,7 @@ public class securityConfig {
                     .requestMatchers("/user/emailCheck/**").permitAll()
                     .requestMatchers("/user/emails/**").permitAll() // 이메일 중복 검사
                     .requestMatchers("/**").permitAll()
+                    .requestMatchers("/observer/report").permitAll()
                     .requestMatchers("/error/**").authenticated()
                     .anyRequest().authenticated(); // 위의 것 외에는 인증 없이 접근 불가
         });
