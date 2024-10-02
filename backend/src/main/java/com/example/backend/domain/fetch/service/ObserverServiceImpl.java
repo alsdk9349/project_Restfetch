@@ -86,7 +86,11 @@ public class ObserverServiceImpl implements ObserverService {
             fetchObserverRepository.save(fetchObserver);
         }
 
+        Optional<Observer> observer = observerRepository.findByObserverSerialNumber(observerSerialNumber);
+        Long observerId = observer.get().getObserver_id();
+
         return ObserverRegisterResponseDto.builder()
+                .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
                 .latitude(latitude)
                 .longitude(longitude)
@@ -114,6 +118,9 @@ public class ObserverServiceImpl implements ObserverService {
             throw new BusinessException(ErrorCode.OBSERVER_NOT_FOUND);
         } else {
             Optional<FetchObserver> fetchObserver = fetchObserverRepository.findByFetchAndObserver(fetch, observer.get());
+            if(fetchObserver.isEmpty()) {
+                throw new BusinessException(ErrorCode.OBSERVER_NOT_FOUND);
+            }
             fetchObserverRepository.delete(fetchObserver.get());
         }
     }

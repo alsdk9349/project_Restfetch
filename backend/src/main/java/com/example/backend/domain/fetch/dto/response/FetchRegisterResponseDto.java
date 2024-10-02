@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class FetchRegisterResponseDto {
+    private long fetchId;
     private String nickname;
     private String fetchSerialNumber;
 }

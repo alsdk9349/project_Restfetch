@@ -88,7 +88,11 @@ public class FetchServiceImpl implements FetchService {
 
             }
 
+        Optional<Fetch> fetch = fetchRepository.findByFetchSerialNumber(fetchSerialNumber);
+        Long fetchId = fetch.get().getFetchId();
+
         return FetchRegisterResponseDto.builder()
+                .fetchId(fetchId)
                 .fetchSerialNumber(fetchSerialNumber)
                 .nickname(nickname)
                 .build();
