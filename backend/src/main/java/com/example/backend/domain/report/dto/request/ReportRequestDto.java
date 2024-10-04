@@ -7,4 +7,5 @@ public class ReportRequestDto {
 
     private String observerSerialNumber;
     private String picture;
+
 }

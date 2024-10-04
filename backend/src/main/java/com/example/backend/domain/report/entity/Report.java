@@ -24,7 +24,8 @@ public class Report {
     private Observer observer;
 
     @NotNull
-    @Column(name = "picture", length = 255)
+    @Lob
+    @Column(name = "picture", length = Integer.MAX_VALUE)
     private String picture;
 
     @NotNull
