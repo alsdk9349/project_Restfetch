@@ -24,7 +24,7 @@ public class Report {
     private Observer observer;
 
     @NotNull
-    @Column(name = "picture", length = 255)
+    @Column(name = "picture")
     private String picture;
 
     @NotNull
