@@ -1,0 +1,53 @@
+import asyncio
+from bleak import BleakClient
+
+# ESP32-CAM의 BLE 장치 주소와 특성 UUID 설정
+BLE_ADDRESS = "30:C9:22:E2:90:CE"  # ESP32-CAM의 MAC 주소 (LightBlue 앱에서 확인 가능)
+CHARACTERISTIC_UUID = "abcdef01-1234-5678-1234-56789abcdef1"  # ESP32-CAM의 특성 UUID
+
+# 이미지 파일 저장을 위한 카운터
+image_counter = 1
+
+async def save_image(image_data):
+    global image_counter
+    # 이미지 파일을 1.jpg, 2.jpg, 3.jpg 형식으로 저장
+    image_file_path = f"received_image_{image_counter}.jpg"
+    with open(image_file_path, "wb") as image_file:
+        image_file.write(image_data)
+    print(f"Image saved to {image_file_path}")
+    image_counter += 1  # 다음 이미지 파일 번호로 증가
+
+async def main():
+    global image_counter
+    # BLE 장치에 연결
+    async with BleakClient(BLE_ADDRESS) as client:
+        print(f"Connected to {BLE_ADDRESS}")
+
+        while True:
+            # Notify 활성화하여 데이터 수신
+            image_data = bytearray()  # 이미지를 저장할 바이트 배열
+
+            def notification_handler(sender: int, data: bytearray):
+                """ 수신된 데이터를 처리하는 핸들러 """
+                nonlocal image_data
+                print(f"Received {len(data)} bytes")
+                image_data.extend(data)  # 수신된 데이터 누적
+
+            # Notify 기능 활성화
+            await client.start_notify(CHARACTERISTIC_UUID, notification_handler)
+            print("Listening for image data...")
+
+            # 60초 동안 데이터를 수신 (1분 동안 데이터 수신)
+            await asyncio.sleep(60)
+
+            # Notify 기능 비활성화
+            await client.stop_notify(CHARACTERISTIC_UUID)
+
+            # 이미지 데이터를 파일로 저장
+            await save_image(image_data)
+
+            # 바로 다음 이미지를 수신할 준비
+            print("Waiting for next image...")
+
+# 이벤트 루프 실행
+asyncio.run(main())
