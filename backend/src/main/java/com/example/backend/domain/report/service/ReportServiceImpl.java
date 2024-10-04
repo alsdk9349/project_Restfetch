@@ -1,18 +1,17 @@
-package com.example.backend.domain.search.service;
+package com.example.backend.domain.report.service;
 
 import com.example.backend.domain.robot.entity.Observer;
 import com.example.backend.domain.robot.repository.ObserverRepository;
-import com.example.backend.domain.search.dto.request.ReportRequestDto;
-import com.example.backend.domain.search.dto.response.ReportResponseDto;
-import com.example.backend.domain.search.entity.Report;
-import com.example.backend.domain.search.repository.ReportRepository;
+import com.example.backend.domain.report.dto.request.ReportRequestDto;
+import com.example.backend.domain.report.dto.response.ReporGetResponseDto;
+import com.example.backend.domain.report.entity.Report;
+import com.example.backend.domain.report.repository.ReportRepository;
 import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +22,7 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final ObserverRepository observerRepository;
 
-    public ReportResponseDto newReport(ReportRequestDto requestDto) {
+    public ReporGetResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
 
         String picture = requestDto.getPicture();
@@ -42,7 +41,7 @@ public class ReportServiceImpl implements ReportService {
         String observerSerialNumber = observer.getObserverSerialNumber();
         Long observerId = observer.getObserver_id();
 
-        return ReportResponseDto.builder()
+        return ReporGetResponseDto.builder()
                 .reportId(report.getId())
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
@@ -52,7 +51,7 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    public List<ReportResponseDto> getReports(Long observerId) {
+    public List<ReporGetResponseDto> getReports(Long observerId) {
         log.info("Get reports");
 
         Observer observer = observerRepository.findById(observerId)
@@ -60,7 +59,8 @@ public class ReportServiceImpl implements ReportService {
 
         List<Report> reports = reportRepository.findByObserver(observer);
 
-        List<ReportResponseDto> reportResponseDtos = new ArrayList<>();
-        return reportResponseDtos;
+        return reports.stream()
+                .map(report -> ReporGetResponseDto.of(observerId, report))
+                .toList();
     }
 }

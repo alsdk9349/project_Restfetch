@@ -7,8 +7,11 @@ import lombok.Data;
 public class ObserverRegisterRequestDto {
 
 
-    @NotNull(message = "시리얼 번호를 입력해주세요.")
+    @NotNull(message = "옵저버 시리얼 번호를 입력해주세요.")
     private String observerSerialNumber;
+
+    @NotNull(message = "패치 시리얼 번호를 입력해주세요.")
+    private String fetchSerialNumber;
 
     @NotNull(message = "위도를 입력해주세요.")
     private Double latitude;

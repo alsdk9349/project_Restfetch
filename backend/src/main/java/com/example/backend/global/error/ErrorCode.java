@@ -29,7 +29,7 @@ public enum ErrorCode {
 
     //Observer
     OBSERVER_DUPLICATED(HttpStatus.CONFLICT, "O001", "이미 등록된 옵저버입니다."),
-    OBSERVER_NOT_FOUND(HttpStatus.NOT_FOUND, "F002", "등록된 옵저버가 없습니다.");
+    OBSERVER_NOT_FOUND(HttpStatus.NOT_FOUND, "O002", "등록된 옵저버가 없습니다.");
     private final HttpStatus status;
     private final String code;
     private final String message;

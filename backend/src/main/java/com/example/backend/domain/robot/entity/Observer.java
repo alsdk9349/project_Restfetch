@@ -1,11 +1,10 @@
 package com.example.backend.domain.robot.entity;
 
-import com.example.backend.domain.search.entity.Report;
+import com.example.backend.domain.report.entity.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.awt.*;
 import java.util.List;
 
 @Entity

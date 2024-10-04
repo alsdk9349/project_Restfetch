@@ -1,4 +1,4 @@
-package com.example.backend.domain.search.dto.response;
+package com.example.backend.domain.report.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportResponseDto {
-
     private long reportId;
     private long observerId;
     private String observerSerialNumber;
     private String picture;
+    private Double latitude;
+    private Double longitude;
     private LocalDateTime createdAt;
     private boolean isPicked;
-
 }
