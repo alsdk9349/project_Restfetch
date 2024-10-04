@@ -1,6 +1,7 @@
 package com.example.backend.domain.pick.service;
 
 import com.example.backend.domain.pick.dto.request.PickRequestDto;
+import com.example.backend.domain.pick.dto.response.PickCheckResponseDto;
 import com.example.backend.domain.pick.dto.response.PickGetResponseDto;
 import com.example.backend.domain.pick.entity.Pick;
 import com.example.backend.domain.pick.repository.PickRepository;
@@ -23,6 +24,10 @@ public class PickServiceImpl implements PickService {
     private final PickRepository pickRepository;
     private final ReportRepository reportRepository;
 
+    /**
+     * 회수 요청
+     * @param reportId
+     */
     @Override
     public void pick(long reportId) {
 
@@ -46,6 +51,11 @@ public class PickServiceImpl implements PickService {
         pickRepository.save(pick);
     }
 
+    /**
+     * 회수 요청 기록 받기
+     * @return
+     */
+
     @Override
     public PickGetResponseDto getPick() {
 
@@ -63,5 +73,31 @@ public class PickServiceImpl implements PickService {
                 .latitude(observer.getLatitude())
                 .longitude(observer.getLongitude())
                 .build();
+    }
+
+    /**
+     * 회수 확인
+     * @param reportId
+     * @return
+     */
+    public PickCheckResponseDto checkPick(long reportId) {
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
+
+        if (report.isPicked()) {
+            throw new BusinessException(ErrorCode.REPORT_ALREADY_PICK);
+        }
+
+        report.setPicked(true);
+        reportRepository.save(report);
+
+        Pick pick = pickRepository.findAll().stream().findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.PICK_NOT_FOUND));
+
+        pickRepository.delete(pick);
+
+
+        return PickCheckResponseDto.of(report);
     }
 }
