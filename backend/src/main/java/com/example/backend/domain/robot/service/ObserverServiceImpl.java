@@ -39,14 +39,15 @@ public class ObserverServiceImpl implements ObserverService {
      */
 
     @Transactional
-    public ObserverRegisterResponseDto registerObserver(Long fetchId, ObserverRegisterRequestDto requestDto) {
-        log.info("register observer request: {}, fetchId: {}", requestDto, fetchId);
+    public ObserverRegisterResponseDto registerObserver(ObserverRegisterRequestDto requestDto) {
+        log.info("register observer request: {}", requestDto);
 
         String observerSerialNumber = requestDto.getObserverSerialNumber();
+        String fetchSerialNumber = requestDto.getFetchSerialNumber();
         Double latitude = requestDto.getLatitude();
         Double longitude = requestDto.getLongitude();
 
-        Fetch fetch = fetchRepository.findById(fetchId)
+        Fetch fetch = fetchRepository.findByFetchSerialNumber(fetchSerialNumber)
                 .orElseThrow(() -> new BusinessException(ErrorCode.FETCH_NOT_FOUND));
 
         Optional<Observer> existObserver = observerRepository.findByObserverSerialNumber(observerSerialNumber);

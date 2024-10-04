@@ -1,4 +1,4 @@
-package com.example.backend.domain.search.entity;
+package com.example.backend.domain.report.entity;
 
 import com.example.backend.domain.robot.entity.Observer;
 import jakarta.persistence.*;
