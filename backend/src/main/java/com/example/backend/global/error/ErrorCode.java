@@ -34,7 +34,10 @@ public enum ErrorCode {
     // Report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "기록을 찾지 못했습니다."),
     REPORT_ALREADY_PICK(HttpStatus.CONFLICT, "R002", "이미 회수한 기록입니다."),
-    REPORT_DUPLICATED(HttpStatus.CONFLICT, "R003", "이미 회수 요청을 보낸 기록입니다.");
+    REPORT_DUPLICATED(HttpStatus.CONFLICT, "R003", "이미 회수 요청을 보낸 기록입니다."),
+
+    // Pick
+    PICK_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "회수 요청이 없습니다.");
 
     private final HttpStatus status;
     private final String code;
