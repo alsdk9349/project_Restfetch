@@ -1,5 +1,6 @@
 package com.suisei.restfetch.presentation.view.account
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -24,16 +25,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.suisei.restfetch.presentation.intent.AccountIntent
 import com.suisei.restfetch.presentation.intent.VerifyEmailIntent
 import com.suisei.restfetch.presentation.state.VerifyEmailState
 import com.suisei.restfetch.presentation.view.theme.BasicButton
 import com.suisei.restfetch.presentation.viewmodel.AccountViewModel
+import com.suisei.restfetch.presentation.viewmodel.NotifyViewModel
 
 @Composable
 fun SignUpScreen() {
-    val viewModel: AccountViewModel = viewModel()
+    val viewModel: AccountViewModel = hiltViewModel()
+    val notifyViewModel: NotifyViewModel = hiltViewModel()
 
     val verifyState = viewModel.verifyState.collectAsState()
 
@@ -44,6 +47,7 @@ fun SignUpScreen() {
     var nickname by remember { mutableStateOf("") }
 
     BackHandler {
+        Log.e("TEST", "BackHandler")
         viewModel.sendViewIntent(AccountIntent.LoadLogin)
     }
 

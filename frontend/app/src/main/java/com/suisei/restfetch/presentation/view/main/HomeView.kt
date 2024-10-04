@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.suisei.restfetch.R
 import com.suisei.restfetch.presentation.intent.MainIntent
@@ -57,7 +58,7 @@ import com.suisei.restfetch.presentation.viewmodel.MainViewModel
 
 @Composable
 fun HomeScreen() {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState()
 
     Column(
@@ -258,7 +259,7 @@ fun FallenObjectContainer() {
 
 @Composable
 fun FallenObject(imageId: Int, imageObject: String) {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     Button(
         onClick = { viewModel.sendIntent(MainIntent.ShowFetchButton) },
         colors = buttonTransparentTheme(),
@@ -288,7 +289,7 @@ fun PreviewHomeView() {
 
 @Composable
 fun FetchButton(modifier: Modifier) {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     Button(
         onClick = { viewModel.sendIntent(MainIntent.HideFetchButton) },
         colors = fetchButtonColor(),

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,17 +27,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.suisei.restfetch.R
 import com.suisei.restfetch.presentation.view.theme.menuButtonBorderColor
 import com.suisei.restfetch.presentation.view.theme.menuButtonColor
 import com.suisei.restfetch.presentation.viewmodel.MainViewModel
+import com.suisei.restfetch.presentation.viewmodel.MyPageViewModel
 
 @Composable
 fun MyPageScreen() {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MyPageViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
-
+    val userData = viewModel.userData.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -55,7 +58,7 @@ fun MyPageScreen() {
                 contentDescription = "account",
                 modifier = Modifier.size(96.dp)
             )
-            Text("NickName", fontSize = 28.sp)
+            Text(userData.value.nickname, fontSize = 28.sp)
             Text("사용 횟수 : " + "10", fontSize = 28.sp)
         }
 
@@ -87,7 +90,6 @@ fun MenuRow(content: @Composable () -> Unit) {
             .fillMaxWidth()
             .padding(0.dp, 0.dp, 0.dp, 24.dp),
         horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally),
-        //horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
         content()

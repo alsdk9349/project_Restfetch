@@ -10,10 +10,11 @@ interface UserAPI {
 
     companion object {
         private const val BASE = "user"
-        val LoginSuccess get() = "M001"
-        val CreateSuccess get() = "M002"
-        val SendSuccess get() = "M003"
-        val VerifySuccess get() = "M004"
+        val LoginSuccess get() = "S001"
+        val CreateSuccess get() = "S002"
+        val SendSuccess get() = "S003"
+        val VerifySuccess get() = "S004"
+        val LogoutSuccess get() = "S005"
     }
 
     @POST("$BASE/signup")

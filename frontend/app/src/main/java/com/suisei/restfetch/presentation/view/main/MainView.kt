@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.suisei.restfetch.presentation.intent.MainIntent
@@ -34,7 +35,7 @@ import com.suisei.restfetch.presentation.viewmodel.MainViewModel
 
 @Composable
 fun MainScreen(navController: NavController) {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     val viewState = viewModel.state.collectAsState()
 
     Column(
@@ -52,7 +53,7 @@ fun MainScreen(navController: NavController) {
 
 @Composable
 fun BottomAppBar() {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     val homeViewState = viewModel.lastHomeViewState
     Row(
         modifier = Modifier
@@ -86,7 +87,7 @@ fun BottomAppBarMenu(
     mainViewState: MainViewState,
     modifier: Modifier
 ) {
-    val viewModel: MainViewModel = viewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState()
     Button(
         onClick = { viewModel.sendIntent(intent) },

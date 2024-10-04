@@ -16,6 +16,9 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.suisei.restfetch.data.remote.ServerClient
 import com.suisei.restfetch.data.remote.UserAPI
+import com.suisei.restfetch.data.repository.AccountRepository
+import com.suisei.restfetch.data.repository.MyDataRepository
+import com.suisei.restfetch.data.repository.NotifyRepository
 import com.suisei.restfetch.presentation.intent.AccountIntent
 import com.suisei.restfetch.presentation.intent.VerifyEmailIntent
 import com.suisei.restfetch.presentation.state.AccountViewState
@@ -24,25 +27,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountViewModel @Inject constructor() : ViewModel() {
-
-    private val _viewState = MutableStateFlow<AccountViewState>(AccountViewState.Login)
-    val viewState: StateFlow<AccountViewState> get() = _viewState
+class AccountViewModel @Inject constructor(
+    private val repository: AccountRepository,
+    private val notifyRepository: NotifyRepository,
+    private val myDataRepository: MyDataRepository
+) : ViewModel() {
     private val accountIntent = Channel<AccountIntent>()
-
-    private val _verifyState = MutableStateFlow<VerifyEmailState>(VerifyEmailState.WaitRequest)
-    val verifyState: StateFlow<VerifyEmailState> get() = _verifyState
     private val verifyIntent = Channel<VerifyEmailIntent>()
 
     private val retrofit = ServerClient.userRetrofit
+
+    val viewState = repository.viewState
+    val verifyState = repository.verifyState
 
     init {
         handleViewIntent()
@@ -70,16 +72,17 @@ class AccountViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadLogin() {
-        _viewState.value = AccountViewState.Login
+        repository.updateViewState(AccountViewState.Login)
     }
 
     private fun loadSignUp() {
-        _viewState.value = AccountViewState.SignUp
-        _verifyState.value = VerifyEmailState.WaitRequest
+        repository.updateViewState(AccountViewState.SignUp)
+        repository.updateVerifyState(VerifyEmailState.WaitRequest)
+
     }
 
     private fun loadForgotPassword() {
-        _viewState.value = AccountViewState.ForgotPassword
+        repository.updateViewState(AccountViewState.ForgotPassword)
     }
 
     private fun handleVerifyIntent() {
@@ -95,15 +98,15 @@ class AccountViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadResendButton() {
-        _verifyState.value = VerifyEmailState.WaitCode
+        repository.updateVerifyState(VerifyEmailState.WaitCode)
     }
 
     private fun loadVerifyButton() {
-        _verifyState.value = VerifyEmailState.WaitVerification
+        repository.updateVerifyState(VerifyEmailState.WaitVerification)
     }
 
     private fun loadCompleteText() {
-        _verifyState.value = VerifyEmailState.VerifyComplete
+        repository.updateVerifyState(VerifyEmailState.VerifyComplete)
     }
 
     fun requestCode(email: String) {
@@ -119,6 +122,8 @@ class AccountViewModel @Inject constructor() : ViewModel() {
                         val responseBody = response.body()
                         if (responseBody!!.code == UserAPI.SendSuccess) {
                             sendVerifyIntent(VerifyEmailIntent.LoadResendButton)
+                        } else {
+                            notifyRepository.showNotify(responseBody.message)
                         }
                     }
                 }
@@ -139,12 +144,14 @@ class AccountViewModel @Inject constructor() : ViewModel() {
                     if (response.isSuccessful) {
                         val responseBody = response.body()
 
-                        if(responseBody!!.code == UserAPI.VerifySuccess) {
+                        if (responseBody!!.code == UserAPI.VerifySuccess) {
                             sendVerifyIntent(VerifyEmailIntent.LoadCompleteText)
+                        } else {
+                            notifyRepository.showNotify(responseBody.message)
                         }
                     }
                 }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 e.message?.let { Log.e("TEST", it) }
             }
 
@@ -158,39 +165,49 @@ class AccountViewModel @Inject constructor() : ViewModel() {
             val response = retrofit.signup(body)
 
             withContext(Dispatchers.Main) {
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     val responseBody = response.body()
 
-                    if(responseBody!!.code == UserAPI.CreateSuccess) {
+                    if (responseBody!!.code == UserAPI.CreateSuccess) {
                         sendViewIntent(AccountIntent.LoadLogin)
+                    } else {
+                        notifyRepository.showNotify(responseBody.message)
                     }
                 }
             }
         }
     }
 
-    fun login(email: String, password: String, onSuccess: (accessToken: String, refreshToken: String) -> Unit) {
+    fun login(
+        email: String,
+        password: String,
+        onSuccess: (accessToken: String, refreshToken: String) -> Unit
+    ) {
         val body = mapOf("email" to email, "password" to password)
         CoroutineScope(Dispatchers.IO).launch {
             val response = retrofit.login(body)
             withContext(Dispatchers.Main) {
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     val responseHeaders = response.headers()
                     val responseBody = response.body()
                     val values = responseHeaders.values("Set-Cookie")
 
                     val keys = responseBody!!.toString()
-                    Log.e("TEST", keys)
 
 
                     val userData = response.body()!!.data
+                    myDataRepository.updateUserData(userData)
 
                     val accessToken = extractToken("accessToken", values[0])
                     val refreshToken = extractToken("refreshToken", values[1])
 
-                    if(responseBody!!.code == UserAPI.LoginSuccess) {
+                    if (responseBody.code == UserAPI.LoginSuccess) {
                         onSuccess(accessToken, refreshToken)
+                    } else {
+                        notifyRepository.showNotify(responseBody.message)
                     }
+                } else {
+                    Log.e("TEST", response.toString())
                 }
             }
         }

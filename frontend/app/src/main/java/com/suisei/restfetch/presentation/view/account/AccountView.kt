@@ -18,18 +18,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.suisei.restfetch.presentation.state.AccountViewState
+import com.suisei.restfetch.presentation.view.Notify
 import com.suisei.restfetch.presentation.view.theme.backgroundColor
 import com.suisei.restfetch.presentation.viewmodel.AccountViewModel
 
 
 @Composable
 fun AccountScreen(navController: NavController) {
-    val viewModel: AccountViewModel = viewModel()
+    val viewModel: AccountViewModel = hiltViewModel()
     val viewState = viewModel.viewState.collectAsState()
+
+    Notify()
 
     Column(
         modifier = Modifier.background(backgroundColor())
@@ -70,7 +73,11 @@ fun EmailInput(email: String, onEmailChange: (String) -> Unit, enabled: Boolean 
 }
 
 @Composable
-fun PasswordInput(label: String = "password", password: String, onPasswordChange: (String) -> Unit) {
+fun PasswordInput(
+    label: String = "password",
+    password: String,
+    onPasswordChange: (String) -> Unit
+) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,

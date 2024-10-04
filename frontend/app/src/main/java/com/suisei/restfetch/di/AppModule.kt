@@ -1,6 +1,9 @@
 package com.suisei.restfetch.di
 
 import android.content.Context
+import com.suisei.restfetch.data.repository.AccountRepository
+import com.suisei.restfetch.data.repository.MyDataRepository
+import com.suisei.restfetch.data.repository.NotifyRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,6 +14,25 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideNotifyRepository(): NotifyRepository {
+        return NotifyRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAccountRepository(): AccountRepository {
+        return AccountRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMyDataRepository(): MyDataRepository {
+        return MyDataRepository()
+    }
+
 
     @Provides
     @Singleton

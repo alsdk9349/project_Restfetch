@@ -20,6 +20,8 @@ credentialsPlayServicesAuth = "1.2.2"
 converterGson = "2.11.0"
 retrofit = "2.11.0"
 retrofitGson = "2.11.0"
+hiltNavigationCompose = "1.2.0"
+lifecycleViewmodelCompose = "2.8.6"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -41,7 +43,8 @@ googleid = { module = "com.google.android.libraries.identity.googleid:googleid",
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:retrofit-gson", version.ref = "retrofitGson" }
-
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

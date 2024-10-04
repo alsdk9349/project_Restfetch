@@ -56,6 +56,8 @@ dependencies {
     //di library
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     //preview library
     implementation(libs.androidx.ui.tooling.preview)

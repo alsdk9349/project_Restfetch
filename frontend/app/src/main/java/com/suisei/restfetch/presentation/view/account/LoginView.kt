@@ -28,9 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.suisei.restfetch.R
 import com.suisei.restfetch.presentation.intent.AccountIntent
 import com.suisei.restfetch.presentation.view.theme.buttonTransparentTheme
@@ -42,7 +42,7 @@ fun LoginScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    val viewModel: AccountViewModel = viewModel()
+    val viewModel: AccountViewModel = hiltViewModel()
 
     AccountTemplate {
         LogoImage()
@@ -63,7 +63,8 @@ fun LoginScreen(navController: NavController) {
 
         EmailLoginButton {
             viewModel.login(email, password) { accessToken, refreshToken ->
-                val sharedPreferences = context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
+                val sharedPreferences =
+                    context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
                 with(sharedPreferences.edit()) {
                     putString("accessToken", accessToken)
                     putString("refreshToken", refreshToken)
@@ -107,7 +108,7 @@ fun NavigationContainer(content: @Composable () -> Unit) {
 
 @Composable
 fun LoadViewButton(text: String, accountIntent: AccountIntent) {
-    val viewModel: AccountViewModel = viewModel()
+    val viewModel: AccountViewModel = hiltViewModel()
     Button(
         onClick = { viewModel.sendViewIntent(accountIntent) },
         colors = buttonTransparentTheme(),
@@ -133,7 +134,7 @@ fun EmailLoginButton(onClick: () -> Unit) {
 
 @Composable
 fun GoogleLoginButton() {
-    val viewModel: AccountViewModel = viewModel()
+    val viewModel: AccountViewModel = hiltViewModel()
     val context = LocalContext.current
     Button(
         onClick = { viewModel.requestGoogleAuth(context) },
