@@ -31,6 +31,10 @@ public class Observer {
     @Column(name = "longitude", columnDefinition = "double")
     private double longitude;
 
+    @NotNull
+    @Column(name = "location", length = 255)
+    private String location;
+
     @OneToMany(mappedBy = "observer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FetchObserver> observers;
     
