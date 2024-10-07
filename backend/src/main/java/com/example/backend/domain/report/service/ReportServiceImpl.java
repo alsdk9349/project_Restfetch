@@ -12,7 +12,7 @@ import com.example.backend.domain.robot.entity.Observer;
 import com.example.backend.domain.robot.repository.FetchObserverRepository;
 import com.example.backend.domain.robot.repository.ObserverRepository;
 import com.example.backend.domain.report.dto.request.ReportRequestDto;
-import com.example.backend.domain.report.dto.response.ReporGetResponseDto;
+import com.example.backend.domain.report.dto.response.ReportGetResponseDto;
 import com.example.backend.domain.report.entity.Report;
 import com.example.backend.domain.report.repository.ReportRepository;
 import com.example.backend.global.error.BusinessException;
@@ -49,7 +49,7 @@ public class ReportServiceImpl implements ReportService {
     private final FetchObserverRepository fetchObserverRepository;
 
 
-    public ReporGetResponseDto newReport(ReportRequestDto requestDto) {
+    public ReportGetResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
 
         String picture = requestDto.getPicture();
@@ -68,7 +68,7 @@ public class ReportServiceImpl implements ReportService {
         String observerSerialNumber = observer.getObserverSerialNumber();
         Long observerId = observer.getObserver_id();
 
-        return ReporGetResponseDto.builder()
+        return ReportGetResponseDto.builder()
                 .reportId(report.getId())
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
@@ -78,7 +78,7 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    public List<ReporGetResponseDto> getReports(Long observerId) {
+    public List<ReportGetResponseDto> getReports(Long observerId) {
         log.info("Get reports");
 
         Observer observer = observerRepository.findById(observerId)
@@ -87,7 +87,7 @@ public class ReportServiceImpl implements ReportService {
         List<Report> reports = reportRepository.findByObserver(observer);
 
         return reports.stream()
-                .map(report -> ReporGetResponseDto.of(observerId, report))
+                .map(report -> ReportGetResponseDto.of(observerId, report))
                 .toList();
     }
 
