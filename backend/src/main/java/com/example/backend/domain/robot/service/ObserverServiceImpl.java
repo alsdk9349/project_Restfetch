@@ -125,6 +125,23 @@ public class ObserverServiceImpl implements ObserverService {
         }
     }
 
+    public List<ObserverGetResponseDto> getObservers() {
+        List<Observer> observers = observerRepository.findAll();
+        List<ObserverGetResponseDto> observerList = new ArrayList<>();
+
+        for (Observer observer : observers) {
+            ObserverGetResponseDto observerGetResponseDto = ObserverGetResponseDto.builder()
+                    .observerId(observer.getObserver_id())
+                    .observerSerialNumber(observer.getObserverSerialNumber())
+                    .longitude(observer.getLatitude())
+                    .latitude(observer.getLatitude())
+                    .build();
+
+            observerList.add(observerGetResponseDto);
+        }
+        return observerList;
+    }
+
     /**
      * 패치에 등록된 옵저버 조회
      * @param fetchId

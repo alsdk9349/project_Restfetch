@@ -28,7 +28,7 @@ public class PickController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @GetMapping("/get")
+    @PostMapping("/get")
     public ResponseEntity<?> getPick(@RequestBody PickGetRequestDto pickGetRequestDto) {
         PickGetResponseDto pickGetResponseDto = pickService.getPick(pickGetRequestDto);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_GET_OK, pickGetResponseDto);
