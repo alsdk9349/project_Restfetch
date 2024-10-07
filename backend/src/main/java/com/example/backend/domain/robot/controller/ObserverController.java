@@ -1,6 +1,7 @@
 package com.example.backend.domain.robot.controller;
 
 import com.example.backend.domain.robot.dto.request.ObserverRegisterRequestDto;
+import com.example.backend.domain.robot.dto.response.ObserverGetResponseDto;
 import com.example.backend.domain.robot.dto.response.ObserverRegisterResponseDto;
 import com.example.backend.domain.robot.service.ObserverService;
 import com.example.backend.domain.report.dto.request.ReportRequestDto;
@@ -9,6 +10,7 @@ import com.example.backend.domain.report.service.ReportService;
 import com.example.backend.global.result.ResultCode;
 import com.example.backend.global.result.ResultResponse;
 import com.example.backend.global.security.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,13 @@ public class ObserverController {
     public ResponseEntity<?> deleteObserver(@AuthenticationPrincipal CustomUserDetails userIn, @PathVariable("fetch_id") Long fetch_id, @PathVariable("observer_id") Long observer_id) {
         observerService.deleteObserver(fetch_id, observer_id);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.OBSERVER_DELETE_OK, observer_id);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getObserver() {
+        List<ObserverGetResponseDto> response = observerService.getObservers();
+        ResultResponse resultResponse = ResultResponse.of(ResultCode.OBSERVER_SEARCH_OK, response);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
