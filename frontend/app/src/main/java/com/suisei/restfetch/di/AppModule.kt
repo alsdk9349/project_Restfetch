@@ -4,6 +4,7 @@ import android.content.Context
 import com.suisei.restfetch.data.repository.AccountRepository
 import com.suisei.restfetch.data.repository.MyDataRepository
 import com.suisei.restfetch.data.repository.NotifyRepository
+import com.suisei.restfetch.data.repository.QRScannerRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +34,11 @@ object AppModule {
         return MyDataRepository()
     }
 
+    @Provides
+    @Singleton
+    fun provideQRScannerRepository(): QRScannerRepository {
+        return QRScannerRepository()
+    }
 
     @Provides
     @Singleton

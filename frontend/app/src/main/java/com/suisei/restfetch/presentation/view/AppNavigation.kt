@@ -11,6 +11,8 @@ import com.suisei.restfetch.presentation.view.main.MainScreen
 fun AppNavigation() {
     val navController = rememberNavController()
 
+    Notify()
+
     NavHost(navController = navController, startDestination = "login_screen") {
         composable("login_screen") {
             AccountScreen(navController)
