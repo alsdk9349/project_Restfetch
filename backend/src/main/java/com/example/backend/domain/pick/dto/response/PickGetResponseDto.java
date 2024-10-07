@@ -1,23 +1,20 @@
-package com.example.backend.domain.search.dto.response;
+package com.example.backend.domain.pick.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportResponseDto {
+public class PickGetResponseDto {
 
+    private long pickId;
     private long reportId;
     private long observerId;
     private String observerSerialNumber;
-    private String picture;
-    private LocalDateTime createdAt;
-    private boolean isPicked;
-
+    private double latitude;
+    private double longitude;
 }

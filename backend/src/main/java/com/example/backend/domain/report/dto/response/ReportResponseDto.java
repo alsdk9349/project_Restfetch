@@ -1,4 +1,4 @@
-package com.example.backend.domain.search.dto.response;
+package com.example.backend.domain.report.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportGetResponseDto {
+public class ReportResponseDto {
     private long reportId;
     private long observerId;
     private String observerSerialNumber;

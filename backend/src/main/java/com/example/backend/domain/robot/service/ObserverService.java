@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ObserverService {
 
-    ObserverRegisterResponseDto registerObserver(Long fetchId, ObserverRegisterRequestDto observerRegisterRequestDto);
+    ObserverRegisterResponseDto registerObserver(ObserverRegisterRequestDto observerRegisterRequestDto);
     void deleteObserver(Long fetchId, Long observerId);
 
     List<ObserverGetResponseDto> getObserver(Long fetchId);

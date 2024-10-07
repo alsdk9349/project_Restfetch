@@ -1,18 +1,19 @@
-package com.example.backend.domain.search.service;
+package com.example.backend.domain.report.service;
 
+import com.example.backend.domain.Sse.controller.SseController;
+import com.example.backend.domain.Sse.service.SseService;
 import com.example.backend.domain.robot.entity.Observer;
 import com.example.backend.domain.robot.repository.ObserverRepository;
-import com.example.backend.domain.search.dto.request.ReportRequestDto;
-import com.example.backend.domain.search.dto.response.ReportResponseDto;
-import com.example.backend.domain.search.entity.Report;
-import com.example.backend.domain.search.repository.ReportRepository;
+import com.example.backend.domain.report.dto.request.ReportRequestDto;
+import com.example.backend.domain.report.dto.response.ReportGetResponseDto;
+import com.example.backend.domain.report.entity.Report;
+import com.example.backend.domain.report.repository.ReportRepository;
 import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,14 +23,20 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
     private final ObserverRepository observerRepository;
+    private final SseService sseService;
+    private final SseController sseController;
 
-    public ReportResponseDto newReport(ReportRequestDto requestDto) {
+    public ReportGetResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
-
-        String picture = requestDto.getPicture();
 
         Observer observer = observerRepository.findByObserverSerialNumber(requestDto.getObserverSerialNumber())
                 .orElseThrow(() -> new BusinessException(ErrorCode.OBSERVER_NOT_FOUND));
+
+//        byte[] decodedBytes = Base64.getDecoder().decode(requestDto.getPicture());
+//
+//        String picture = new String(Base64.getDecoder().decode(Base64.getDecoder().decode(decodedBytes)), StandardCharsets.UTF_8);
+
+        String picture = requestDto.getPicture();
 
         Report report = Report.builder()
                 .observer(observer)
@@ -42,7 +49,7 @@ public class ReportServiceImpl implements ReportService {
         String observerSerialNumber = observer.getObserverSerialNumber();
         Long observerId = observer.getObserver_id();
 
-        return ReportResponseDto.builder()
+        ReportGetResponseDto responseDto = ReportGetResponseDto.builder()
                 .reportId(report.getId())
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
@@ -50,9 +57,13 @@ public class ReportServiceImpl implements ReportService {
                 .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
                 .build();
+
+        sseController.notifyNewReport(responseDto);
+
+        return responseDto;
     }
 
-    public List<ReportResponseDto> getReports(Long observerId) {
+    public List<ReportGetResponseDto> getReports(Long observerId) {
         log.info("Get reports");
 
         Observer observer = observerRepository.findById(observerId)
@@ -60,7 +71,8 @@ public class ReportServiceImpl implements ReportService {
 
         List<Report> reports = reportRepository.findByObserver(observer);
 
-        List<ReportResponseDto> reportResponseDtos = new ArrayList<>();
-        return reportResponseDtos;
+        return reports.stream()
+                .map(report -> ReportGetResponseDto.of(observerId, report))
+                .toList();
     }
 }
