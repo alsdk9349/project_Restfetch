@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "report")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -24,7 +25,8 @@ public class Report {
     private Observer observer;
 
     @NotNull
-    @Column(name = "picture")
+    @Lob
+    @Column(name = "picture", length = Integer.MAX_VALUE)
     private String picture;
 
     @NotNull

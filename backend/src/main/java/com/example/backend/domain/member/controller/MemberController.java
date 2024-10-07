@@ -9,12 +9,14 @@ import com.example.backend.domain.member.dto.response.LoginResponseDto;
 import com.example.backend.domain.member.service.MemberService;
 import com.example.backend.global.result.ResultCode;
 import com.example.backend.global.result.ResultResponse;
+import com.example.backend.global.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -83,7 +85,7 @@ public class MemberController {
      * 로그아웃
      */
     @DeleteMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal CustomUserDetails userIn, HttpServletRequest request) {
         memberService.logout(request);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.LOGOUT_OK);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);

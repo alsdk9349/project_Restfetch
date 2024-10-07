@@ -17,14 +17,23 @@ import com.example.backend.domain.report.entity.Report;
 import com.example.backend.domain.report.repository.ReportRepository;
 import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
+import io.netty.handler.codec.base64.Base64Decoder;
 import com.example.backend.global.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Base64Util;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
