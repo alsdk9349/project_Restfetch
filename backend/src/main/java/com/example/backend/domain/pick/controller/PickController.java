@@ -6,9 +6,11 @@ import com.example.backend.domain.pick.dto.response.PickGetResponseDto;
 import com.example.backend.domain.pick.service.PickService;
 import com.example.backend.global.result.ResultCode;
 import com.example.backend.global.result.ResultResponse;
+import com.example.backend.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -20,7 +22,7 @@ public class PickController {
     private final PickService pickService;
 
     @PostMapping("/request/{report_id}")
-    public ResponseEntity<?> requestPick(@PathVariable("report_id") long reportId) {
+    public ResponseEntity<?> requestPick(@AuthenticationPrincipal CustomUserDetails userIn, @PathVariable("report_id") long reportId) {
         pickService.pick(reportId);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_REQUEST_OK);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
@@ -34,7 +36,7 @@ public class PickController {
     }
 
     @PostMapping("/check/{report_id}")
-    public ResponseEntity<?> checkPick(@PathVariable("report_id") long reportId) {
+    public ResponseEntity<?> checkPick(@AuthenticationPrincipal CustomUserDetails userIn, @PathVariable("report_id") long reportId) {
         PickCheckResponseDto pickCheckResponseDto = pickService.checkPick(reportId);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_CHECK_OK, pickCheckResponseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);

@@ -38,9 +38,11 @@ public class ReportServiceImpl implements ReportService {
         Observer observer = observerRepository.findByObserverSerialNumber(requestDto.getObserverSerialNumber())
                 .orElseThrow(() -> new BusinessException(ErrorCode.OBSERVER_NOT_FOUND));
 
-        byte[] decodedBytes = Base64.getDecoder().decode(requestDto.getPicture());
+//        byte[] decodedBytes = Base64.getDecoder().decode(requestDto.getPicture());
+//
+//        String picture = new String(Base64.getDecoder().decode(Base64.getDecoder().decode(decodedBytes)), StandardCharsets.UTF_8);
 
-        String picture = new String(Base64.getDecoder().decode(Base64.getDecoder().decode(decodedBytes)), StandardCharsets.UTF_8);
+        String picture = requestDto.getPicture();
 
         Report report = Report.builder()
                 .observer(observer)
