@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.google.gson.JsonParser
 import com.suisei.restfetch.data.remote.ServerClient
 import com.suisei.restfetch.data.remote.UserAPI
 import com.suisei.restfetch.data.repository.AccountRepository
@@ -30,6 +31,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -178,45 +180,41 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    fun login(
-        email: String,
-        password: String,
-        onSuccess: (accessToken: String, refreshToken: String) -> Unit
-    ) {
+    private fun saveLoginInfo(context: Context, email: String, password: String) {
+        val sharedPreferences =
+            context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("email", email)
+            putString("password", password)
+            apply()
+        }
+    }
+
+    fun login(context: Context, email: String, password: String, onSuccess: () -> Unit) {
         val body = mapOf("email" to email, "password" to password)
         CoroutineScope(Dispatchers.IO).launch {
             val response = retrofit.login(body)
+            Log.e("TEST", response.raw().toString())
             withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    val responseHeaders = response.headers()
+                if(response.isSuccessful) {
                     val responseBody = response.body()
-                    val values = responseHeaders.values("Set-Cookie")
 
-                    val keys = responseBody!!.toString()
+                    if(responseBody!!.code == UserAPI.LoginSuccess) {
+                        saveLoginInfo(context, email, password)
 
-
-                    val userData = response.body()!!.data
-                    myDataRepository.updateUserData(userData)
-
-                    val accessToken = extractToken("accessToken", values[0])
-                    val refreshToken = extractToken("refreshToken", values[1])
-
-                    if (responseBody.code == UserAPI.LoginSuccess) {
-                        onSuccess(accessToken, refreshToken)
-                    } else {
-                        notifyRepository.showNotify(responseBody.message)
+                        onSuccess()
                     }
                 } else {
-                    Log.e("TEST", response.toString())
+                    handleResponseError(response.errorBody())
                 }
             }
         }
     }
 
-    private fun extractToken(tokenName: String, cookieString: String): String {
-        val regex = Regex("$tokenName=([^;]+)")
-        val accessKey = regex.find(cookieString)
-        return accessKey?.groups?.get(1)?.value!!
+    private fun handleResponseError(errorResponseBody: ResponseBody?) {
+        Log.e("TEST", errorResponseBody!!.string())
+        val error = JsonParser.parseString(errorResponseBody.string()).asJsonObject
+        Log.e("TEST", "handleResponseError")
     }
 
     fun requestGoogleAuth(context: Context) {

@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,25 @@ fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
     val viewModel: AccountViewModel = hiltViewModel()
 
+    //auto login
+    LaunchedEffect(Unit) {
+        val sharedPreferences =
+            context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
+
+        email = sharedPreferences.getString("email", "")!!
+        password = sharedPreferences.getString("password", "")!!
+
+        if(email != "" && password != "") {
+            viewModel.login(context, email, password){
+                navController.navigate("main_screen") {
+                    popUpTo("login_screen") {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    }
+
     AccountTemplate {
         LogoImage()
         Spacer(modifier = Modifier.height(24.dp))
@@ -62,15 +82,7 @@ fun LoginScreen(navController: NavController) {
         }
 
         EmailLoginButton {
-            viewModel.login(email, password) { accessToken, refreshToken ->
-                val sharedPreferences =
-                    context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
-                with(sharedPreferences.edit()) {
-                    putString("accessToken", accessToken)
-                    putString("refreshToken", refreshToken)
-                    apply()
-                }
-
+            viewModel.login(context, email, password) {
                 navController.navigate("main_screen") {
                     popUpTo("login_screen") {
                         inclusive = true

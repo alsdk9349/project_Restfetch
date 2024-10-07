@@ -66,6 +66,10 @@ dependencies {
     //remote library
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.eventsource)
+    implementation(libs.okhttp.sse)
+    implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.0")
 
     //google login library
     implementation(libs.androidx.credentials)
