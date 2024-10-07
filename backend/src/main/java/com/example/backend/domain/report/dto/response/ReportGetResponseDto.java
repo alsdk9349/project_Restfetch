@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @NoArgsConstructor
-public class ReporGetResponseDto {
+public class ReportGetResponseDto {
 
     private long reportId;
     private long observerId;
@@ -20,7 +20,7 @@ public class ReporGetResponseDto {
     private boolean isPicked;
 
     @Builder
-    private ReporGetResponseDto(long reportId, long observerId, String observerSerialNumber, String picture, LocalDateTime createdAt, boolean isPicked) {
+    private ReportGetResponseDto(long reportId, long observerId, String observerSerialNumber, String picture, LocalDateTime createdAt, boolean isPicked) {
         this.reportId = reportId;
         this.observerId = observerId;
         this.observerSerialNumber = observerSerialNumber;
@@ -29,8 +29,8 @@ public class ReporGetResponseDto {
         this.isPicked = isPicked;
     }
 
-    public static ReporGetResponseDto of(Long observerId, Report report) {
-        return ReporGetResponseDto.builder()
+    public static ReportGetResponseDto of(Long observerId, Report report) {
+        return ReportGetResponseDto.builder()
                 .observerId(observerId)
                 .observerSerialNumber(report.getObserver().getObserverSerialNumber())
                 .reportId(report.getId())
