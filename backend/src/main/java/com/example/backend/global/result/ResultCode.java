@@ -31,7 +31,8 @@ public enum ResultCode {
 
     // Report
     REPORT_NEW_OK(HttpStatus.OK, "S012", "기록 받기 성공했습니다."),
-    REPORT_GET_OK(HttpStatus.OK, "S013", "기록 조회 성공했습니다.");
+    REPORT_GET_OK(HttpStatus.OK, "S013", "기록 조회 성공했습니다."),
+    REPORT_LIST_OK(HttpStatus.OK, "S014", "유저의 사진 조회 성공했습니다.");
 
 
     private final HttpStatus status;

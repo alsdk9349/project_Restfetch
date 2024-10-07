@@ -1,6 +1,15 @@
 package com.example.backend.domain.report.service;
 
+import com.example.backend.domain.member.entity.Member;
+import com.example.backend.domain.member.entity.MemberFetch;
+import com.example.backend.domain.member.repository.MemberFetchRepository;
+import com.example.backend.domain.member.repository.MemberRepository;
+import com.example.backend.domain.report.dto.response.ReportListResponseDto;
+import com.example.backend.domain.robot.dto.response.FetchGetResponseDto;
+import com.example.backend.domain.robot.entity.Fetch;
+import com.example.backend.domain.robot.entity.FetchObserver;
 import com.example.backend.domain.robot.entity.Observer;
+import com.example.backend.domain.robot.repository.FetchObserverRepository;
 import com.example.backend.domain.robot.repository.ObserverRepository;
 import com.example.backend.domain.report.dto.request.ReportRequestDto;
 import com.example.backend.domain.report.dto.response.ReporGetResponseDto;
@@ -8,11 +17,15 @@ import com.example.backend.domain.report.entity.Report;
 import com.example.backend.domain.report.repository.ReportRepository;
 import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
+import com.example.backend.global.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,6 +34,11 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
     private final ObserverRepository observerRepository;
+    private final CookieUtil cookieUtil;
+    private final MemberRepository memberRepository;
+    private final MemberFetchRepository memberFetchRepository;
+    private final FetchObserverRepository fetchObserverRepository;
+
 
     public ReporGetResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
@@ -62,5 +80,42 @@ public class ReportServiceImpl implements ReportService {
         return reports.stream()
                 .map(report -> ReporGetResponseDto.of(observerId, report))
                 .toList();
+    }
+
+    public List<ReportListResponseDto> getReportList(HttpServletRequest request) {
+        log.info("Get reportList");
+
+        long memberId = cookieUtil.getUserId(request);
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        List<MemberFetch> fetches = memberFetchRepository.findByMember(member);
+
+        List<ReportListResponseDto> reportList = new ArrayList<>();
+
+        for (MemberFetch memberFetch : fetches) {
+            Fetch fetch = memberFetch.getFetch();
+
+            List<FetchObserver> fetchObservers = fetchObserverRepository.findByFetch(fetch);
+
+            for (FetchObserver fetchObserver : fetchObservers) {
+                Observer observer = fetchObserver.getObserver();
+
+                List<Report> unpickedReports = observer.getReports().stream()
+                        .filter(report -> !report.isPicked())
+                        .collect(Collectors.toList());
+
+                for (Report report : unpickedReports) {
+                    ReportListResponseDto reportDto = ReportListResponseDto.builder()
+                            .observerId(observer.getObserver_id())
+                            .reportId(report.getId())
+                            .picture(report.getPicture())
+                            .createdAt(report.getCreatedAt())
+                            .build();
+                    reportList.add(reportDto);
+                }
+            }
+        }
+        return reportList;
     }
 }
