@@ -200,6 +200,7 @@ class AccountViewModel @Inject constructor(
                     val responseBody = response.body()
 
                     if(responseBody!!.code == UserAPI.LoginSuccess) {
+                        myDataRepository.setUser(responseBody.data)
                         saveLoginInfo(context, email, password)
 
                         onSuccess()

@@ -23,4 +23,8 @@ object ServerClient {
     val userRetrofit: UserAPI by lazy {
         retrofit.create(UserAPI::class.java)
     }
+
+    val deviceAPI: DeviceAPI by lazy {
+        retrofit.create(DeviceAPI::class.java)
+    }
 }

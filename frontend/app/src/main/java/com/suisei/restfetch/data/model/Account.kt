@@ -1,8 +1,7 @@
 package com.suisei.restfetch.data.model
 
-data class User(
-    val memberId: Int,
+data class Account(
+    val email: String,
     val nickname: String,
-    val email: String
+    val password: String
 )
-
