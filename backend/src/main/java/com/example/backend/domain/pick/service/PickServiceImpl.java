@@ -1,20 +1,27 @@
 package com.example.backend.domain.pick.service;
 
-import com.example.backend.domain.pick.dto.request.PickRequestDto;
+import com.example.backend.domain.pick.dto.request.PickGetRequestDto;
 import com.example.backend.domain.pick.dto.response.PickCheckResponseDto;
 import com.example.backend.domain.pick.dto.response.PickGetResponseDto;
 import com.example.backend.domain.pick.entity.Pick;
 import com.example.backend.domain.pick.repository.PickRepository;
 import com.example.backend.domain.report.entity.Report;
 import com.example.backend.domain.report.repository.ReportRepository;
+import com.example.backend.domain.robot.entity.Fetch;
+import com.example.backend.domain.robot.entity.FetchObserver;
 import com.example.backend.domain.robot.entity.Observer;
+import com.example.backend.domain.robot.repository.FetchObserverRepository;
+import com.example.backend.domain.robot.repository.FetchRepository;
+import com.example.backend.domain.robot.repository.ObserverRepository;
 import com.example.backend.global.error.BusinessException;
 import com.example.backend.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,6 +30,9 @@ public class PickServiceImpl implements PickService {
 
     private final PickRepository pickRepository;
     private final ReportRepository reportRepository;
+    private final ObserverRepository observerRepository;
+    private final FetchRepository fetchRepository;
+    private final FetchObserverRepository fetchObserverRepository;
 
     /**
      * 회수 요청
@@ -57,10 +67,32 @@ public class PickServiceImpl implements PickService {
      */
 
     @Override
-    public PickGetResponseDto getPick() {
+    public PickGetResponseDto getPick(PickGetRequestDto pickGetRequestDto) {
 
-        Pick pick = pickRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.PICK_NOT_FOUND));
+        String fetchSerialNumber = pickGetRequestDto.getFetchSerialNumber();
+        Optional<Fetch> fetch = fetchRepository.findByFetchSerialNumber(fetchSerialNumber);
+
+        if (fetch.isEmpty()) {
+            throw new BusinessException(ErrorCode.FETCH_NOT_FOUND);
+        }
+
+        List<FetchObserver> fetchObservers = fetchObserverRepository.findByFetch(fetch.get());
+
+        if (fetchObservers.isEmpty()) {
+            throw new BusinessException(ErrorCode.OBSERVER_NOT_FOUND);
+        }
+
+        List<Pick> picks = pickRepository.findAll().stream()
+                .filter(pick -> fetchObservers.stream()
+                        .flatMap(fetchObserver -> fetchObserver.getObserver().getReports().stream())
+                        .anyMatch(report -> report.getId() == pick.getReport().getId()))
+                .toList();
+
+        if (picks.isEmpty()) {
+            throw new BusinessException(ErrorCode.PICK_NOT_FOUND);
+        }
+
+        Pick pick = picks.get(0);
 
         Observer observer = pick.getReport().getObserver();
         pickRepository.delete(pick);

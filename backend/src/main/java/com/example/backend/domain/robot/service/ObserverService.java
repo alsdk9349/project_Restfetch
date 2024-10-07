@@ -10,6 +10,6 @@ public interface ObserverService {
 
     ObserverRegisterResponseDto registerObserver(ObserverRegisterRequestDto observerRegisterRequestDto);
     void deleteObserver(Long fetchId, Long observerId);
-
+    List<ObserverGetResponseDto> getObservers();
     List<ObserverGetResponseDto> getObserver(Long fetchId);
 }

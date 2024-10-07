@@ -1,6 +1,6 @@
 package com.example.backend.domain.pick.controller;
 
-import com.example.backend.domain.pick.dto.request.PickRequestDto;
+import com.example.backend.domain.pick.dto.request.PickGetRequestDto;
 import com.example.backend.domain.pick.dto.response.PickCheckResponseDto;
 import com.example.backend.domain.pick.dto.response.PickGetResponseDto;
 import com.example.backend.domain.pick.service.PickService;
@@ -28,9 +28,9 @@ public class PickController {
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<?> getPick() {
-        PickGetResponseDto pickGetResponseDto = pickService.getPick();
+    @PostMapping("/get")
+    public ResponseEntity<?> getPick(@RequestBody PickGetRequestDto pickGetRequestDto) {
+        PickGetResponseDto pickGetResponseDto = pickService.getPick(pickGetRequestDto);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_GET_OK, pickGetResponseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
