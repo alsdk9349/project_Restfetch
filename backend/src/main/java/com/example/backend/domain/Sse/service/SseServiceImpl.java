@@ -58,7 +58,7 @@ public class SseServiceImpl implements SseService {
                         .data(message + ": " + reportData) // 메시지와 데이터를 결합하여 전송
                         .reconnectTime(3000L);
                 emitter.send(event); // 데이터 전송
-                log.info("{}",reportData.getReportId());
+                log.info("{}", emitter);
             } catch (Exception e) {
                 log.info("fail");
                 emitter.completeWithError(e); // 에러 처리
