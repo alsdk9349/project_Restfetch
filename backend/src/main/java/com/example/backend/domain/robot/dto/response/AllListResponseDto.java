@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ObserverGetResponseDto {
-    private long observerId;
-    private String observerSerialNumber;
-    private Double latitude;
-    private Double longitude;
-    private String location;
+public class AllListResponseDto {
+
+    private List<FetchGetResponseDto> fetches;
+    private List<ObserverGetResponseDto> observers;
+
 }

@@ -209,7 +209,7 @@ public class MemberServiceImpl implements MemberService {
 
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setSecure(false);
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(3600);
 

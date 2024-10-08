@@ -92,7 +92,7 @@ public class securityConfig {
         config.setAllowedOriginPatterns(Collections.singletonList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
