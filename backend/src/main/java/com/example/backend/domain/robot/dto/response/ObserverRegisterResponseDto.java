@@ -12,4 +12,5 @@ public class ObserverRegisterResponseDto {
     private String observerSerialNumber;
     private Double latitude;
     private Double longitude;
+    private String location;
 }

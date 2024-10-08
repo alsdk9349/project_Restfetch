@@ -19,4 +19,7 @@ public class ObserverRegisterRequestDto {
     @NotNull(message = "경도를 입력해주세요.")
     private Double longitude;
 
+    @NotNull(message = "옵저버 위치를 입력해주세요.")
+    private String location;
+
 }

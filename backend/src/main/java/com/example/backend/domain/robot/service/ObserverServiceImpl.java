@@ -46,6 +46,7 @@ public class ObserverServiceImpl implements ObserverService {
         String fetchSerialNumber = requestDto.getFetchSerialNumber();
         Double latitude = requestDto.getLatitude();
         Double longitude = requestDto.getLongitude();
+        String location = requestDto.getLocation();
 
         Fetch fetch = fetchRepository.findByFetchSerialNumber(fetchSerialNumber)
                 .orElseThrow(() -> new BusinessException(ErrorCode.FETCH_NOT_FOUND));
@@ -74,6 +75,7 @@ public class ObserverServiceImpl implements ObserverService {
                     .observerSerialNumber(observerSerialNumber)
                     .latitude(latitude)
                     .longitude(longitude)
+                    .location(location)
                     .build();
 
             observerRepository.save(observer);
@@ -94,6 +96,7 @@ public class ObserverServiceImpl implements ObserverService {
                 .observerSerialNumber(observerSerialNumber)
                 .latitude(latitude)
                 .longitude(longitude)
+                .location(location)
                 .build();
 
     }
@@ -163,6 +166,7 @@ public class ObserverServiceImpl implements ObserverService {
                     .observerSerialNumber(observer.getObserverSerialNumber())
                     .longitude(observer.getLatitude())
                     .latitude(observer.getLatitude())
+                    .location(observer.getLocation())
                     .build();
 
             observerList.add(observerGetResponseDto);
