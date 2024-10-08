@@ -6,6 +6,6 @@ import com.example.backend.domain.report.dto.response.ReportGetResponseDto;
 public interface SseService {
 
     SseEmitter connect(String SseId);
-    void send(ReportGetResponseDto reportData);
+    void send(ReportGetResponseDto reportData, String message);
 
 }

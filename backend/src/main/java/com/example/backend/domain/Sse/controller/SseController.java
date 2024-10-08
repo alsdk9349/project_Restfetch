@@ -30,7 +30,7 @@ public class SseController {
         return ResponseEntity.ok(emitter);
     }
 
-    public void send(ReportGetResponseDto reportData) {
-        sseService.send(reportData);
+    public void send(ReportGetResponseDto reportData, String message) {
+        sseService.send(reportData, message);
     }
 }

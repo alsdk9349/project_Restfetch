@@ -138,6 +138,11 @@ public class PickServiceImpl implements PickService {
         return PickCheckResponseDto.of(report);
     }
 
+    /**
+     * 패치가 물건을 회수하면 알림을 보냄
+     * @param reportId
+     * @return
+     */
     @Override
     public ReportGetResponseDto pick(long reportId) {
 
@@ -151,7 +156,7 @@ public class PickServiceImpl implements PickService {
                 .build();
 
         sseRepository.save(observer.getObserverSerialNumber(), new SseEmitter());
-        sseController.send(responseDto);
+        sseController.send(responseDto, "물건을 회수했습니다.");
 
         return responseDto;
     }

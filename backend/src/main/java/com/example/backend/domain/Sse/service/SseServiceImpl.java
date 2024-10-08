@@ -40,19 +40,24 @@ public class SseServiceImpl implements SseService {
 
         // 첫 연결 시 503에러 방지 위해 더미 데이터 전송
         ReportGetResponseDto data = new ReportGetResponseDto();
-        send(data);
+        send(data, "연결 성공");
 
 
         return emitter;
     }
 
-    public void send(ReportGetResponseDto reportData) {
+    public void send(ReportGetResponseDto reportData, String message) {
         log.info("Sending report to Sse");
 
         sseRepository.getAll().forEach((key, emitter) -> {
             try {
                 log.info("key: {}, emitter: {}", key, emitter);
-                emitter.send(reportData); // 데이터 전송
+                SseEmitter.SseEventBuilder event = SseEmitter.event()
+                        .name(message) // 이벤트 이름
+                        .id(String.valueOf(reportData.getReportId())) // 이벤트 ID
+                        .data(message + ": " + reportData) // 메시지와 데이터를 결합하여 전송
+                        .reconnectTime(3000L);
+                emitter.send(event); // 데이터 전송
                 log.info("{}",reportData.getReportId());
             } catch (Exception e) {
                 log.info("fail");
