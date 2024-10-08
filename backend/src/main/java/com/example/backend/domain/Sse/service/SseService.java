@@ -5,7 +5,7 @@ import com.example.backend.domain.report.dto.response.ReportGetResponseDto;
 
 public interface SseService {
 
-    SseEmitter subscribe(String SseId);
-    void broadcast(ReportGetResponseDto repartData);
+    SseEmitter connect(String SseId);
+    void send(ReportGetResponseDto reportData, String message);
 
 }

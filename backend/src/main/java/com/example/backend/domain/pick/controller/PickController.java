@@ -1,9 +1,11 @@
 package com.example.backend.domain.pick.controller;
 
+import com.example.backend.domain.Sse.service.SseService;
 import com.example.backend.domain.pick.dto.request.PickGetRequestDto;
 import com.example.backend.domain.pick.dto.response.PickCheckResponseDto;
 import com.example.backend.domain.pick.dto.response.PickGetResponseDto;
 import com.example.backend.domain.pick.service.PickService;
+import com.example.backend.domain.report.dto.response.ReportGetResponseDto;
 import com.example.backend.global.result.ResultCode;
 import com.example.backend.global.result.ResultResponse;
 import com.example.backend.global.security.CustomUserDetails;
@@ -20,10 +22,11 @@ import org.springframework.web.bind.annotation.*;
 public class PickController {
 
     private final PickService pickService;
+    private final SseService sseService;
 
     @PostMapping("/request/{report_id}")
     public ResponseEntity<?> requestPick(@AuthenticationPrincipal CustomUserDetails userIn, @PathVariable("report_id") long reportId) {
-        pickService.pick(reportId);
+        pickService.requestPick(reportId);
         ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_REQUEST_OK);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
@@ -41,5 +44,13 @@ public class PickController {
         ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_CHECK_OK, pickCheckResponseDto);
         return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
     }
+
+    @PostMapping("/{report_id}")
+    public ResponseEntity<?> pick(@PathVariable("report_id") long reportId) {
+        ReportGetResponseDto responseDto = pickService.pick(reportId);
+        ResultResponse resultResponse = ResultResponse.of(ResultCode.PICK_CHECK_OK, responseDto);
+        return ResponseEntity.status(resultResponse.getStatus()).body(resultResponse);
+    }
+
 }
 

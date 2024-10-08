@@ -16,6 +16,7 @@ public class ReportResponseDto {
     private long observerId;
     private String observerSerialNumber;
     private String picture;
+    private String picturename;
     private Double latitude;
     private Double longitude;
     private LocalDateTime createdAt;

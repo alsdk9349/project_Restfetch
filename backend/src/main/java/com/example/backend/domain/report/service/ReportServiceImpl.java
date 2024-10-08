@@ -1,6 +1,7 @@
 package com.example.backend.domain.report.service;
 
 import com.example.backend.domain.Sse.controller.SseController;
+import com.example.backend.domain.Sse.repository.SseRepository;
 import com.example.backend.domain.Sse.service.SseService;
 import com.example.backend.domain.robot.entity.Observer;
 import com.example.backend.domain.robot.repository.ObserverRepository;
@@ -13,8 +14,11 @@ import com.example.backend.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -23,8 +27,8 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
     private final ObserverRepository observerRepository;
-    private final SseService sseService;
     private final SseController sseController;
+    private final SseRepository sseRepository;
 
     public ReportGetResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
@@ -54,11 +58,13 @@ public class ReportServiceImpl implements ReportService {
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
                 .picture(picture)
+                .pictureName(report.getPictureName())
                 .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
                 .build();
 
-        sseController.notifyNewReport(responseDto);
+        sseRepository.save(observerSerialNumber, new SseEmitter());
+        sseController.send(responseDto, "새로운 기록이 생겼습니다.");
 
         return responseDto;
     }

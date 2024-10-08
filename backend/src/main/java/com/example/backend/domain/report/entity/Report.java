@@ -29,6 +29,9 @@ public class Report {
     @Column(name = "picture", length = Integer.MAX_VALUE)
     private String picture;
 
+    @Column(name = "picture_name")
+    private String pictureName;
+
     @NotNull
     @Column(name = "isPicked", columnDefinition = "boolean")
     private boolean isPicked;
