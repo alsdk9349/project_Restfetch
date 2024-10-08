@@ -75,16 +75,16 @@ fun MyPageScreen() {
             modifier = Modifier
                 .weight(1.2f)
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.Bottom),
+            verticalArrangement = Arrangement.spacedBy(20.dp, alignment = Alignment.Bottom),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 imageVector = Icons.Rounded.AccountCircle,
                 contentDescription = "account",
-                modifier = Modifier.size(96.dp)
+                modifier = Modifier.size(80.dp)
             )
-            Text(userData.value.nickname, fontSize = 28.sp)
-            Text("사용 횟수 : " + "10", fontSize = 28.sp)
+            Text(userData.value.nickname, fontSize = 24.sp)
+            Text("사용 횟수 : " + "10", fontSize = 24.sp)
         }
 
 

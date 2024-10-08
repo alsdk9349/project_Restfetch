@@ -15,9 +15,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonParser
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.gun0912.tedpermission.coroutine.TedPermission
+import com.suisei.restfetch.data.model.Fetcher
 import com.suisei.restfetch.data.repository.QRScannerRepository
 import com.suisei.restfetch.presentation.intent.QRScannerIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +34,13 @@ import javax.inject.Inject
 class QRScannerViewModel @Inject constructor(private val qrScannerRepository: QRScannerRepository) :
     ViewModel() {
     val qrScannerState = qrScannerRepository.qrScannerState
-    val scannedText = qrScannerRepository.scannedText
+    val serialNumber = qrScannerRepository.serialNumber
+
+    val productType = qrScannerRepository.productType
     val productNickname = qrScannerRepository.productNickname
+    val selectFetcherState = qrScannerRepository.selectFetcherState
+    val parentFetcher = qrScannerRepository.parentFetcher
+
     private lateinit
             var cameraProvider: ProcessCameraProvider
 
@@ -126,11 +133,23 @@ class QRScannerViewModel @Inject constructor(private val qrScannerRepository: QR
                         for (barcode in barcodes) {
                             barcode.rawValue?.let {
                                 Log.e("TEST", it)
-                                if (scannedText.value != it) {
-                                    viewModelScope.launch {
-                                        qrScannerRepository.updateScanState(true)
+                                try {
+                                    val jsonObject = JsonParser.parseString(it).asJsonObject
+                                    val type = jsonObject.get("type").asInt
+                                    val serialNumber = jsonObject.get("serialNumber").asString
+
+                                    Log.e("TEST", "$type : $serialNumber")
+
+                                    if (this@QRScannerViewModel.serialNumber.value != serialNumber) {
+                                        viewModelScope.launch {
+                                            qrScannerRepository.updateScanState(true)
+                                        }
+                                        qrScannerRepository.updateProductType(type)
+                                        qrScannerRepository.updateSerialNumber(serialNumber)
                                     }
-                                    qrScannerRepository.updateScannedText(it)
+
+                                } catch (e: Exception) {
+
                                 }
 
                             }
@@ -155,4 +174,13 @@ class QRScannerViewModel @Inject constructor(private val qrScannerRepository: QR
     fun updateProductNickname(nickname: String) {
         qrScannerRepository.updateProductNickname(nickname)
     }
+
+    fun updateSelectFetcherState(state: Boolean) {
+        qrScannerRepository.updateSelectFetcherState(state)
+    }
+
+    fun setParentFetcher(fetcher: Fetcher) {
+        qrScannerRepository.setParentFetcher(fetcher)
+    }
+
 }

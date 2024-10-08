@@ -2,6 +2,7 @@ package com.suisei.restfetch.data.remote
 
 import com.suisei.restfetch.data.model.Fetcher
 import com.suisei.restfetch.data.model.Observer
+import com.suisei.restfetch.data.model.RegisterObserver
 import com.suisei.restfetch.data.model.Report
 import com.suisei.restfetch.data.model.RequestResponse
 import retrofit2.Response
@@ -27,8 +28,8 @@ interface DeviceAPI {
     @GET("$FETCH_BASE/get")
     suspend fun getFetcherList(): Response<RequestResponse<List<Fetcher>>>
 
-    @POST("$OBSERVER_BASE/{fetcherId}/register")
-    suspend fun registerObserver(@Path("fetcherId") fetcherId: Long, @Body body: Observer /*Map<String, Any>*/): Response<RequestResponse<Observer>>
+    @POST("$OBSERVER_BASE/register")
+    suspend fun registerObserver(@Body body: RegisterObserver): Response<RequestResponse<Observer>>
 
     @GET("$FETCH_BASE/{fetcherId}/observerList")
     suspend fun getObserverList(@Path("fetcherId") fetcherId: Long): Response<RequestResponse<List<Observer>>>

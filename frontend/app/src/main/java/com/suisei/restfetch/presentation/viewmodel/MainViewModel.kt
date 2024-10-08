@@ -3,12 +3,14 @@ package com.suisei.restfetch.presentation.viewmodel
 import android.graphics.Bitmap.createScaledBitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suisei.restfetch.data.model.Observer
 import com.suisei.restfetch.data.model.Report
+import com.suisei.restfetch.data.remote.SSEClient
 import com.suisei.restfetch.data.remote.ServerClient
 import com.suisei.restfetch.data.repository.MainRepository
 import com.suisei.restfetch.data.repository.MyDataRepository
@@ -49,6 +51,7 @@ class MainViewModel @Inject constructor(
 
     private val retrofit = ServerClient.deviceAPI
 
+    private val sseClient = SSEClient()
     init {
 
         handleIntent()
@@ -56,6 +59,7 @@ class MainViewModel @Inject constructor(
         updateFetcherList()
         observeFetchers()
         observeObservers()
+        sseClient.startSse()
     }
 
     fun sendIntent(intent: MainIntent) = viewModelScope.launch(Dispatchers.IO) {
@@ -159,9 +163,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun stringToImageBitmap(image: String): ImageBitmap {
+    fun stringToImageBitmap(image: String): ImageBitmap? {
         val encodedByte: ByteArray = Base64.decode(image, Base64.DEFAULT)
         val bitmap = BitmapFactory.decodeByteArray(encodedByte, 0, encodedByte.size)
+        if(bitmap == null) {
+            return null
+        }
         val imageBitmap = createScaledBitmap(bitmap, 800, 450, true).asImageBitmap()
 
         return imageBitmap
@@ -174,6 +181,16 @@ class MainViewModel @Inject constructor(
         } else {
             repository.selectFallen(item)
             sendIntent(MainIntent.ShowFetchButton)
+        }
+
+    }
+
+    fun requestPick() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = retrofit.requestPick(selectedReport.value.reportId)
+            if(response.isSuccessful) {
+                Log.e("TEST", response.body().toString())
+            }
         }
 
     }

@@ -84,11 +84,15 @@ fun HomeScreen(homeViewState: HomeViewState) {
             ) {
                 items(reportList.size) { index ->
                     if (crtLocation.value.location == "전체" || crtLocation.value.observerId == reportList[index].observerId) {
-                        FallenObject(
-                            reportList[index],
-                            viewModel.stringToImageBitmap(reportList[index].picture),
-                            imageObject = "TEST"
-                        )
+                        val imageBitmap = viewModel.stringToImageBitmap(reportList[index].picture)
+                        if(imageBitmap != null) {
+                            FallenObject(
+                                reportList[index],
+                                imageBitmap,
+                                imageObject = "TEST"
+                            )
+                        }
+
                     }
                 }
             }
@@ -287,7 +291,9 @@ fun PreviewHomeView() {
 fun FetchButton(modifier: Modifier) {
     val viewModel: MainViewModel = hiltViewModel()
     Button(
-        onClick = { viewModel.sendIntent(MainIntent.HideFetchButton) },
+        onClick = {
+            viewModel.requestPick()
+            viewModel.sendIntent(MainIntent.HideFetchButton) },
         colors = fetchButtonColor(),
         modifier = modifier
             .padding(64.dp),

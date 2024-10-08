@@ -5,13 +5,17 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.CookieManager
+import java.util.concurrent.TimeUnit
 
 object ServerClient {
     private const val BASE_URL = "http://j11c209.p.ssafy.io:8080/"
 
     private var builder = OkHttpClient().newBuilder()
-    private var okHttpClient = builder
+    var okHttpClient = builder
         .cookieJar(JavaNetCookieJar(CookieManager()))
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .connectTimeout(10, TimeUnit.SECONDS) // 연결 타임아웃 설정
+        .writeTimeout(10, TimeUnit.SECONDS) // 작성 타임아웃 설정
         .build()
 
     private val retrofit = Retrofit.Builder()

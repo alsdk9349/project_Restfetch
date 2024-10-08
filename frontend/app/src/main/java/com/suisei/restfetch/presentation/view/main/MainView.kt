@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +38,9 @@ import com.suisei.restfetch.presentation.viewmodel.MainViewModel
 fun MainScreen(navController: NavController) {
     val viewModel: MainViewModel = hiltViewModel()
     val viewState = viewModel.state.collectAsState()
+    LaunchedEffect(Unit) {
 
+    }
     Column(
         modifier = Modifier
             .background(backgroundColor()),
@@ -109,10 +112,10 @@ fun BottomAppBarMenu(
             Image(
                 imageVector = imageVector,
                 contentDescription = description,
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(32.dp),
                 colorFilter = ColorFilter.tint(color)
             )
-            Text(description, color = color, fontSize = 18.sp)
+            Text(description, color = color, fontSize = 16.sp)
         }
 
     }
