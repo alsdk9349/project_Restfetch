@@ -1,12 +1,21 @@
 package com.suisei.restfetch.presentation.viewmodel
 
+import android.graphics.Bitmap.createScaledBitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suisei.restfetch.data.model.Observer
+import com.suisei.restfetch.data.model.Report
 import com.suisei.restfetch.data.remote.ServerClient
+import com.suisei.restfetch.data.repository.MainRepository
 import com.suisei.restfetch.data.repository.MyDataRepository
 import com.suisei.restfetch.presentation.intent.MainIntent
+import com.suisei.restfetch.presentation.state.HomeViewState
 import com.suisei.restfetch.presentation.state.MainViewState
+import com.suisei.restfetch.presentation.state.MyPageState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,26 +29,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val repository: MainRepository,
     private val myDataRepository: MyDataRepository
 ) : ViewModel() {
-    private val _state = MutableStateFlow<MainViewState>(MainViewState.Home(MainViewState.HomeViewState()))
-    val state: StateFlow<MainViewState> get() = _state
 
-    var lastHomeViewState: MainViewState.HomeViewState
+    val state = repository.state
+    val crtLocation = repository.crtObserver
+
+    var lastHomeViewState: HomeViewState = repository.lastHomeViewState
+    var lastMyPageState: MyPageState = repository.lastMyPageState
 
     val fetcherList = myDataRepository.fetcherList
     val observerList = myDataRepository.observerList
     val reportList = myDataRepository.reportList
+
+    val selectedReport: StateFlow<Report> = repository.selectedReport
 
     private val mainIntent = Channel<MainIntent> ()
 
     private val retrofit = ServerClient.deviceAPI
 
     init {
-        val currentState = _state.value as MainViewState.Home
-        lastHomeViewState = currentState.homeViewState
 
-        handleViewIntent()
+        handleIntent()
 
         updateFetcherList()
         observeFetchers()
@@ -50,48 +62,41 @@ class MainViewModel @Inject constructor(
         mainIntent.send(intent)
     }
 
-    private fun handleViewIntent() {
+    private fun handleIntent() {
         viewModelScope.launch(Dispatchers.IO) {
             mainIntent.consumeAsFlow().collect { intent ->
                 when (intent) {
                     MainIntent.LoadHome -> loadHome()
                     MainIntent.LoadMyPage -> loadMyPage()
-                    MainIntent.ShowFetchButton -> showFetchButton()
-                    MainIntent.HideFetchButton -> hideFetchButton()
+                    MainIntent.ShowFetchButton -> setFetchButtonVisibility(true)
+                    MainIntent.HideFetchButton -> setFetchButtonVisibility(false)
                 }
             }
         }
     }
 
     private fun loadHome() {
-        _state.value = MainViewState.Home(lastHomeViewState)
+        repository.updateState(MainViewState.Home(lastHomeViewState))
+        //_state.value =
     }
 
     private fun loadMyPage() {
-        _state.value = MainViewState.MyPage
+        repository.updateState(MainViewState.MyPage(lastMyPageState))
+        //_state.value =
     }
 
-    private fun showFetchButton() {
-        showFetchButton(true)
-    }
-
-    private fun hideFetchButton() {
-        showFetchButton(false)
-    }
-
-    private fun showFetchButton(isSelected: Boolean) {
-        val currentState = _state.value as MainViewState.Home
+    private fun setFetchButtonVisibility(visibility: Boolean) {
+        val currentState = state.value as MainViewState.Home
 
         val newState = currentState.copy(
-            homeViewState = currentState.homeViewState.copy(
-                selectState = currentState.homeViewState.selectState.copy(
-                    isSelected = isSelected
+            homeState = currentState.homeState.copy(
+                selectState = currentState.homeState.selectState.copy(
+                    isSelected = visibility
                 )
             )
         )
-
-        _state.value = newState
-        lastHomeViewState = newState.homeViewState
+        repository.updateState(newState)
+        lastHomeViewState = newState.homeState
     }
 
 
@@ -152,5 +157,24 @@ class MainViewModel @Inject constructor(
                 updateReportList()
             }
         }
+    }
+
+    fun stringToImageBitmap(image: String): ImageBitmap {
+        val encodedByte: ByteArray = Base64.decode(image, Base64.DEFAULT)
+        val bitmap = BitmapFactory.decodeByteArray(encodedByte, 0, encodedByte.size)
+        val imageBitmap = createScaledBitmap(bitmap, 800, 450, true).asImageBitmap()
+
+        return imageBitmap
+    }
+
+    fun selectReport(item: Report) {
+        if (selectedReport.value == item) {
+            repository.selectFallen(Report())
+            sendIntent(MainIntent.HideFetchButton)
+        } else {
+            repository.selectFallen(item)
+            sendIntent(MainIntent.ShowFetchButton)
+        }
+
     }
 }

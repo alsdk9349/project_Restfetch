@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,19 +37,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.suisei.restfetch.R
+import com.suisei.restfetch.data.model.Report
 import com.suisei.restfetch.presentation.intent.MainIntent
-import com.suisei.restfetch.presentation.state.MainViewState
+import com.suisei.restfetch.presentation.state.HomeViewState
 import com.suisei.restfetch.presentation.view.theme.backgroundColor
 import com.suisei.restfetch.presentation.view.theme.buttonTransparentTheme
 import com.suisei.restfetch.presentation.view.theme.dropdownBackgroundColor
@@ -57,9 +58,11 @@ import com.suisei.restfetch.presentation.view.theme.menuButtonBorderColor
 import com.suisei.restfetch.presentation.viewmodel.MainViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(homeViewState: HomeViewState) {
     val viewModel: MainViewModel = hiltViewModel()
-    val state = viewModel.state.collectAsState()
+    val reportList by viewModel.reportList.collectAsState()
+    val crtLocation = viewModel.crtLocation.collectAsState()
+    //val state = viewModel.state.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -73,19 +76,29 @@ fun HomeScreen() {
                 .fillMaxWidth()
                 .weight(1f), contentAlignment = Alignment.Center
         ) {
-            FallenObjectContainer()
-
-            when (val state = state.value) {
-                is MainViewState.Home -> {
-                    if (state.homeViewState.selectState.isSelected) {
-                        FetchButton(
-                            Modifier
-                                .align(Alignment.BottomCenter)
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxHeight()
+            ) {
+                items(reportList.size) { index ->
+                    if (crtLocation.value.location == "전체" || crtLocation.value.observerId == reportList[index].observerId) {
+                        FallenObject(
+                            reportList[index],
+                            viewModel.stringToImageBitmap(reportList[index].picture),
+                            imageObject = "TEST"
                         )
                     }
                 }
+            }
 
-                MainViewState.MyPage -> TODO()
+
+            if (homeViewState.selectState.isSelected) {
+                FetchButton(
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                )
             }
         }
 
@@ -241,27 +254,13 @@ fun NotificationList(showDialog: Boolean, dismissList: () -> Unit) {
 }
 
 @Composable
-fun FallenObjectContainer() {
-    val scrollState = rememberScrollState()
-    Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        modifier = Modifier
-            .padding(24.dp)
-            .fillMaxHeight()
-            .verticalScroll(scrollState)
-    ) {
-        FallenObject(R.drawable.logo, "갤럭시 워치")
-        /*FallenObject(R.drawable.logo, "갤럭시 탭")
-        FallenObject(R.drawable.logo, "갤럭시 워치")
-        FallenObject(R.drawable.logo, "갤럭시 탭")*/
-    }
-}
-
-@Composable
-fun FallenObject(imageId: Int, imageObject: String) {
+fun FallenObject(item: Report, picture: ImageBitmap, imageObject: String) {
     val viewModel: MainViewModel = hiltViewModel()
     Button(
-        onClick = { viewModel.sendIntent(MainIntent.ShowFetchButton) },
+        onClick = { /*viewModel.sendIntent(MainIntent.ShowFetchButton)*/ viewModel.selectReport(
+            item
+        )
+        },
         colors = buttonTransparentTheme(),
         shape = RectangleShape,
         elevation = ButtonDefaults.elevatedButtonElevation(pressedElevation = 8.dp),
@@ -270,11 +269,8 @@ fun FallenObject(imageId: Int, imageObject: String) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = imageId),
-                contentDescription = imageObject,
-                modifier = Modifier
-                    .width(240.dp)
-                    .height(160.dp)
+                bitmap = picture,
+                contentDescription = "Fallen"
             )
             Text(imageObject, fontSize = 28.sp, color = Color.Black)
         }
@@ -284,7 +280,7 @@ fun FallenObject(imageId: Int, imageObject: String) {
 @Preview(showBackground = true, backgroundColor = 0XFFFFFDF8)
 @Composable
 fun PreviewHomeView() {
-    HomeScreen()
+    HomeScreen(HomeViewState())
 }
 
 @Composable

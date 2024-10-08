@@ -45,7 +45,7 @@ fun MainScreen(navController: NavController) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         when (val state = viewState.value) {
-            is MainViewState.Home -> HomeScreen()
+            is MainViewState.Home -> HomeScreen(state.homeState)
             is MainViewState.MyPage -> MyPageScreen()
         }
     }
@@ -55,6 +55,8 @@ fun MainScreen(navController: NavController) {
 fun BottomAppBar() {
     val viewModel: MainViewModel = hiltViewModel()
     val homeViewState = viewModel.lastHomeViewState
+    val myPageViewState = viewModel.lastMyPageState
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +75,7 @@ fun BottomAppBar() {
             imageVector = Icons.Outlined.Person,
             description = "MyPage",
             MainIntent.LoadMyPage,
-            MainViewState.MyPage,
+            MainViewState.MyPage(myPageViewState),
             modifier = Modifier.weight(1f)
         )
     }
