@@ -57,8 +57,8 @@ public class SseServiceImpl implements SseService {
                 log.info("{}", key);
                 SseEmitter.SseEventBuilder event = SseEmitter.event()
                         .name(message) // 이벤트 이름
-                        .data(reportData)
-                        .reconnectTime(3000L);
+                        .data(reportData);
+                //.reconnectTime(3000L);
                 emitter.send(event); // 데이터 전송
                 log.info("zzz{}", reportData);
             } catch (Exception e) {
