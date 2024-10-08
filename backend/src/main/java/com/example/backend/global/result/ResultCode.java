@@ -29,6 +29,9 @@ public enum ResultCode {
     OBSERVER_DELETE_OK(HttpStatus.OK, "S010", "옵저버 삭제 성공했습니다."),
     OBSERVER_SEARCH_OK(HttpStatus.OK, "S011", "옵저버 조회 성공했습니다."),
 
+    // Robot
+    ALL_LIST_GET_OK(HttpStatus.OK, "S201", "페치, 옵저버 전체 리스트 조회 성공했습니다."),
+
     // Report
     REPORT_NEW_OK(HttpStatus.OK, "S012", "기록 받기 성공했습니다."),
     REPORT_GET_OK(HttpStatus.OK, "S013", "기록 조회 성공했습니다."),
