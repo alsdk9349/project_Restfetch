@@ -1,10 +1,13 @@
 package com.example.backend.domain.pick.service;
 
+import com.example.backend.domain.Sse.controller.SseController;
+import com.example.backend.domain.Sse.repository.SseRepository;
 import com.example.backend.domain.pick.dto.request.PickGetRequestDto;
 import com.example.backend.domain.pick.dto.response.PickCheckResponseDto;
 import com.example.backend.domain.pick.dto.response.PickGetResponseDto;
 import com.example.backend.domain.pick.entity.Pick;
 import com.example.backend.domain.pick.repository.PickRepository;
+import com.example.backend.domain.report.dto.response.ReportGetResponseDto;
 import com.example.backend.domain.report.entity.Report;
 import com.example.backend.domain.report.repository.ReportRepository;
 import com.example.backend.domain.robot.entity.Fetch;
@@ -18,6 +21,7 @@ import com.example.backend.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,16 +34,17 @@ public class PickServiceImpl implements PickService {
 
     private final PickRepository pickRepository;
     private final ReportRepository reportRepository;
-    private final ObserverRepository observerRepository;
+    private final SseRepository sseRepository;
     private final FetchRepository fetchRepository;
     private final FetchObserverRepository fetchObserverRepository;
+    private final SseController sseController;
 
     /**
      * 회수 요청
      * @param reportId
      */
     @Override
-    public void pick(long reportId) {
+    public void requestPick(long reportId) {
 
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
@@ -131,5 +136,23 @@ public class PickServiceImpl implements PickService {
 
 
         return PickCheckResponseDto.of(report);
+    }
+
+    @Override
+    public ReportGetResponseDto pick(long reportId) {
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
+
+        Observer observer = report.getObserver();
+
+        ReportGetResponseDto responseDto = ReportGetResponseDto.builder()
+                .reportId(report.getId())
+                .build();
+
+        sseRepository.save(observer.getObserverSerialNumber(), new SseEmitter());
+        sseController.send(responseDto);
+
+        return responseDto;
     }
 }

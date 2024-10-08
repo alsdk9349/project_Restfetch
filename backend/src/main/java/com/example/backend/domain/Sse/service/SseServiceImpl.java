@@ -53,6 +53,7 @@ public class SseServiceImpl implements SseService {
             try {
                 log.info("key: {}, emitter: {}", key, emitter);
                 emitter.send(reportData); // 데이터 전송
+                log.info("{}",reportData.getReportId());
             } catch (Exception e) {
                 log.info("fail");
                 emitter.completeWithError(e); // 에러 처리
