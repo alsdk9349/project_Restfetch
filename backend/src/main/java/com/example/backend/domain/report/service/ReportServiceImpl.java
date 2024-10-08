@@ -58,6 +58,7 @@ public class ReportServiceImpl implements ReportService {
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
                 .picture(picture)
+                .pictureName(report.getPictureName())
                 .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
                 .build();

@@ -16,15 +16,17 @@ public class ReportGetResponseDto {
     private long observerId;
     private String observerSerialNumber;
     private String picture;
+    private String pictureName;
     private LocalDateTime createdAt;
     private boolean isPicked;
 
     @Builder
-    private ReportGetResponseDto(long reportId, long observerId, String observerSerialNumber, String picture, LocalDateTime createdAt, boolean isPicked) {
+    private ReportGetResponseDto(long reportId, long observerId, String observerSerialNumber, String picture, String pictureName, LocalDateTime createdAt, boolean isPicked) {
         this.reportId = reportId;
         this.observerId = observerId;
         this.observerSerialNumber = observerSerialNumber;
         this.picture = picture;
+        this.pictureName = pictureName;
         this.createdAt = createdAt;
         this.isPicked = isPicked;
     }
@@ -35,6 +37,7 @@ public class ReportGetResponseDto {
                 .observerSerialNumber(report.getObserver().getObserverSerialNumber())
                 .reportId(report.getId())
                 .picture(report.getPicture())
+                .pictureName(report.getPictureName())
                 .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
                 .build();
