@@ -155,7 +155,7 @@ public class PickServiceImpl implements PickService {
                 .reportId(report.getId())
                 .build();
 
-        sseRepository.save(observer.getObserverSerialNumber(), new SseEmitter());
+        sseRepository.save("물건을 회수했습니다.", new SseEmitter());
         sseController.send(responseDto, "물건을 회수했습니다.");
 
         return responseDto;
