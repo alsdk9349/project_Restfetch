@@ -90,6 +90,7 @@ public class ReportServiceImpl implements ReportService {
 
         sseRepository.save(observerSerialNumber, new SseEmitter());
         log.info("New report success");
+//        cookieUtil.getMemberEmail()
         sseController.send(responseDto, "새로운 기록이 생겼습니다.");
 
         return responseDto;

@@ -241,6 +241,7 @@ public class MemberServiceImpl implements MemberService {
 
     public void logout(HttpServletRequest request) {
         String email = cookieUtil.getMemberEmail(request);
+        log.info(email);
         memberRedisService.deleteValue(AUTH_CODE_PREFIX + email);
     }
 

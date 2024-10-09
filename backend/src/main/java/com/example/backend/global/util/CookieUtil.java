@@ -29,7 +29,7 @@ public class CookieUtil {
                     .parseClaimsJws(accessToken)
                     .getBody();
 
-            String email = claims.getSubject();
+            String email = getEmail(claims);
             return email;
         } else {
             return null;
