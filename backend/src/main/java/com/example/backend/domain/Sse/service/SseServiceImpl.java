@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,8 +53,14 @@ public class SseServiceImpl implements SseService {
     public void send(ReportGetResponseDto reportData, String message) {
         log.info("Sending report to Sse");
 
+        List<Map.Entry<String, SseEmitter>> emittersList = new ArrayList<>(sseRepository.getAll().entrySet());
+        Collections.reverse(emittersList);
 
-        sseRepository.getAll().forEach((key, emitter) -> {
+//        sseRepository.getAll().forEach((key, emitter) -> {
+        for (Map.Entry<String, SseEmitter> entry : emittersList) {
+            String key = entry.getKey();
+            SseEmitter emitter = entry.getValue();
+
             try {
                 log.info("{}", key);
                 SseEmitter.SseEventBuilder event = SseEmitter.event()
@@ -61,6 +69,19 @@ public class SseServiceImpl implements SseService {
                 //.reconnectTime(3000L);
                 emitter.send(event); // 데이터 전송
                 log.info("zzz{}", reportData);
+
+                // 캐시된 이벤트도 함께 전송
+                List<Object> cachedEvents = sseRepository.getEvents(key); // 해당 키로 캐시된 이벤트 가져오기
+//                Collections.reverse(cachedEvents); // 리스트를 역순으로 변환
+
+                for (Object cachedEvent : cachedEvents) {
+                    SseEmitter.SseEventBuilder cachedEventBuilder = SseEmitter.event()
+                            .name(key) // 캐시된 이벤트 이름 (필요시 변경 가능)
+                            .data(cachedEvent);
+                    emitter.send(cachedEventBuilder); // 캐시된 이벤트 전송
+                    log.info("Cached event sent: {}", cachedEvent);
+                }
+
             } catch (Exception e) {
                 log.info("fail");
                 emitter.completeWithError(e); // 에러 처리
@@ -68,6 +89,6 @@ public class SseServiceImpl implements SseService {
 
                 sseRepository.cacheEvent(key, reportData);
             }
-        });
+        };
     }
 }
