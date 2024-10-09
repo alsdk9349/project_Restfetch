@@ -29,15 +29,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.suisei.restfetch.presentation.intent.MainIntent
 import com.suisei.restfetch.presentation.state.MainViewState
+import com.suisei.restfetch.presentation.view.Notify
 import com.suisei.restfetch.presentation.view.theme.backgroundColor
 import com.suisei.restfetch.presentation.view.theme.bottomAppBarBackgroundColor
 import com.suisei.restfetch.presentation.view.theme.buttonTransparentTheme
 import com.suisei.restfetch.presentation.viewmodel.MainViewModel
+import com.suisei.restfetch.presentation.viewmodel.NotifyViewModel
 
 @Composable
 fun MainScreen(navController: NavController) {
     val viewModel: MainViewModel = hiltViewModel()
     val viewState = viewModel.state.collectAsState()
+
+    Notify()
+
     LaunchedEffect(Unit) {
 
     }
@@ -52,6 +57,8 @@ fun MainScreen(navController: NavController) {
             is MainViewState.MyPage -> MyPageScreen()
         }
     }
+
+
 }
 
 @Composable

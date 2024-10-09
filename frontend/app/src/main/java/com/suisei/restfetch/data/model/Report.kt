@@ -7,6 +7,7 @@ data class Report(
     val observerId: Long = 0,
     val observerSerialNumber: String = "",
     val picture: String = "",
+    val pictureName: String = "",
     val createAt: LocalDateTime = LocalDateTime.now(),
     val picked: Boolean = false
 )

@@ -183,7 +183,7 @@ fun MyFetcherList(onDismissRequest: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top)
             ) {
                 items(fetcherList.value.size) { item ->
-                    DeviceItem(
+                    FetcherItem(
                         fetcherList.value[item].fetchName,
                         fetcherList.value[item].fetchSerialNumber
                     ) {
@@ -196,7 +196,7 @@ fun MyFetcherList(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-fun DeviceItem(nickname: String, serialNumber: String, onClick: () -> Unit) {
+fun FetcherItem(nickname: String, serialNumber: String, onClick: () -> Unit) {
     BasicButton(onClick = onClick) {
         Column {
             Text(nickname)

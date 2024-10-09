@@ -17,14 +17,22 @@ class MainRepository @Inject constructor() {
     private val _selectedReport = MutableStateFlow(Report())
     val selectedReport: StateFlow<Report> = _selectedReport
 
-    private val _state: MutableStateFlow<MainViewState>
+    private val _state: MutableStateFlow<MainViewState> = MutableStateFlow(MainViewState.MyPage(MyPageState()))
     val state: StateFlow<MainViewState> get() = _state
 
     var lastHomeViewState: HomeViewState
     var lastMyPageState: MyPageState
 
+    private val _newReports: MutableStateFlow<List<Report>> = MutableStateFlow(ArrayList())
+    val newReports: StateFlow<List<Report>> = _newReports
+
+    private val _notify = MutableStateFlow(false)
+    val notify: StateFlow<Boolean> = _notify
+
+    private val _moveReportIndex = MutableStateFlow(-1)
+    val moveReportIndex: StateFlow<Int> = _moveReportIndex
+
     init {
-        _state = MutableStateFlow(MainViewState.MyPage(MyPageState()))
         val crtMyPageViewState = _state.value as MainViewState.MyPage
         lastMyPageState = crtMyPageViewState.myPageState
 
@@ -42,5 +50,24 @@ class MainRepository @Inject constructor() {
 
     fun updateState(viewState: MainViewState) {
         _state.value = viewState
+    }
+
+    fun addNewReport(report: Report) {
+        val updatedList = _newReports.value.toMutableList()
+        updatedList.add(report)
+        _newReports.value = updatedList
+    }
+
+    fun resetNewReports() {
+         _newReports.value = ArrayList()
+
+    }
+
+    fun setMoveReportIndex(index: Int) {
+        _moveReportIndex.value = index
+    }
+
+    fun setNotify(state: Boolean) {
+        _notify.value = state
     }
 }

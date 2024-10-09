@@ -16,7 +16,7 @@ class MyPageViewModel @Inject constructor(private val myDataRepository: MyDataRe
     ViewModel() {
     val userData = myDataRepository.userData
 
-    val deviceAPI = ServerClient.deviceAPI
+    private val deviceAPI = ServerClient.deviceAPI
 
     fun addFetcher(serialNumber: String, nickname: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -46,3 +46,4 @@ class MyPageViewModel @Inject constructor(private val myDataRepository: MyDataRe
 
     }
 }
+

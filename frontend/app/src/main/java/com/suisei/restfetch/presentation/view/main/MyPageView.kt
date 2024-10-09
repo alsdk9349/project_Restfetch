@@ -1,11 +1,8 @@
 package com.suisei.restfetch.presentation.view.main
 
-import android.widget.Toast
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,18 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,19 +29,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.suisei.restfetch.R
 import com.suisei.restfetch.presentation.intent.QRScannerIntent
+import com.suisei.restfetch.presentation.view.theme.BasicButton
 import com.suisei.restfetch.presentation.view.theme.menuButtonBorderColor
 import com.suisei.restfetch.presentation.view.theme.menuButtonColor
 import com.suisei.restfetch.presentation.viewmodel.MainViewModel
@@ -62,8 +52,7 @@ fun MyPageScreen() {
     val qrScannerViewModel: QRScannerViewModel = hiltViewModel()
     val qrScanState = qrScannerViewModel.qrScannerState.collectAsState()
 
-    val context = LocalContext.current
-
+    var myDeviceState by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -95,9 +84,15 @@ fun MyPageScreen() {
                 .verticalScroll(scrollState)
         ) {
             MenuRow {
-                MenuButton(menuImageId = R.drawable.logo, description = "내 기기", onClick = { })
-                MenuButton(menuImageId = R.drawable.logo, description = "QR 기기 등록", onClick = { qrScannerViewModel.sendIntent(
-                    QRScannerIntent.ShowQRRegistration) })
+                MenuButton(
+                    menuImageId = R.drawable.logo,
+                    description = "내 기기",
+                    onClick = { myDeviceState = true })
+                MenuButton(menuImageId = R.drawable.logo, description = "QR 기기 등록", onClick = {
+                    qrScannerViewModel.sendIntent(
+                        QRScannerIntent.ShowQRRegistration
+                    )
+                })
             }
             MenuRow {
                 MenuButton(menuImageId = R.drawable.logo, description = "페치 등록", onClick = { })
@@ -109,10 +104,16 @@ fun MyPageScreen() {
             }
         }
 
-        if(qrScanState.value.scanning) {
+        if (qrScanState.value.scanning) {
             PreviewCamera {
                 qrScannerViewModel.sendIntent(QRScannerIntent.HideQRRegistration)
                 qrScannerViewModel.stopCamera()
+            }
+        }
+
+        if (myDeviceState) {
+            MyDeviceList {
+                myDeviceState = false
             }
         }
 
@@ -121,12 +122,78 @@ fun MyPageScreen() {
 }
 
 @Composable
+fun MyDeviceList(onDismissRequest: () -> Unit) {
+    val viewModel: MainViewModel = hiltViewModel()
+
+    val fetcherList = viewModel.fetcherList.collectAsState()
+    val observerList = viewModel.observerList.collectAsState()
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            Button(onClick = onDismissRequest) {
+                Text("확인")
+            }
+        },
+        title = {
+            Text("등록 기기 목록")
+        },
+        text = {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                LazyColumn(
+                    modifier = Modifier.weight(0.5f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                    contentPadding = PaddingValues(4.dp)
+                ) {
+                    items(fetcherList.value.size) { index ->
+
+                        DeviceItem(
+                            fetcherList.value[index].fetchName,
+                            fetcherList.value[index].fetchSerialNumber
+                        ) {
+
+                        }
+                    }
+                }
+                LazyColumn(
+                    modifier = Modifier.weight(0.5f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                    contentPadding = PaddingValues(4.dp)
+                ) {
+                    items(observerList.value.size - 1) { index ->
+                        DeviceItem(
+                            observerList.value[index + 1].location,
+                            observerList.value[index + 1].observerSerialNumber
+                        ) {
+
+                        }
+                    }
+                }
+            }
+        })
+}
+
+@Composable
+fun DeviceItem(nickname: String, serialNumber: String, onClick: () -> Unit) {
+    BasicButton(onClick = onClick) {
+        Column {
+            Text(nickname)
+            Text(serialNumber)
+        }
+    }
+}
+
+
+@Composable
 fun MenuRow(content: @Composable () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(0.dp, 0.dp, 0.dp, 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(
+            24.dp,
+            alignment = Alignment.CenterHorizontally
+        ),
         verticalAlignment = Alignment.Top
     ) {
         content()

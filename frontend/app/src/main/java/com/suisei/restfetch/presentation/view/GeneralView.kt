@@ -16,7 +16,7 @@ fun Notify() {
 
     if (notifyState.value) {
         AlertDialog(
-            onDismissRequest = { notifyViewModel.closeNotify() },
+            onDismissRequest = {  },
             text = { Text(notifyMessage.value) },
             confirmButton = {
                 Button(onClick = { notifyViewModel.closeNotify() }) {

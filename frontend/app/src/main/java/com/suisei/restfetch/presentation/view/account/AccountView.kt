@@ -32,6 +32,8 @@ fun AccountScreen(navController: NavController) {
     val viewModel: AccountViewModel = hiltViewModel()
     val viewState = viewModel.viewState.collectAsState()
 
+    Notify()
+
     Column(
         modifier = Modifier.background(backgroundColor())
     ) {

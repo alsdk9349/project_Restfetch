@@ -8,12 +8,15 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.suisei.restfetch.data.model.Observer
 import com.suisei.restfetch.data.model.Report
 import com.suisei.restfetch.data.remote.SSEClient
 import com.suisei.restfetch.data.remote.ServerClient
 import com.suisei.restfetch.data.repository.MainRepository
 import com.suisei.restfetch.data.repository.MyDataRepository
+import com.suisei.restfetch.data.repository.NotifyRepository
 import com.suisei.restfetch.presentation.intent.MainIntent
 import com.suisei.restfetch.presentation.state.HomeViewState
 import com.suisei.restfetch.presentation.state.MainViewState
@@ -22,17 +25,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Response
+import okhttp3.sse.EventSource
+import okhttp3.sse.EventSourceListener
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: MainRepository,
-    private val myDataRepository: MyDataRepository
+    private val myDataRepository: MyDataRepository,
+    private val notifyRepository: NotifyRepository,
+    private val sseClient: SSEClient
 ) : ViewModel() {
 
     val state = repository.state
@@ -51,7 +58,13 @@ class MainViewModel @Inject constructor(
 
     private val retrofit = ServerClient.deviceAPI
 
-    private val sseClient = SSEClient()
+    val observerMap = myDataRepository.observerMap
+    val newReports = repository.newReports
+    val notifyNewReports = repository.notify
+    val notifyState = repository.notify
+
+    val moveReportIndex = repository.moveReportIndex
+
     init {
 
         handleIntent()
@@ -59,7 +72,41 @@ class MainViewModel @Inject constructor(
         updateFetcherList()
         observeFetchers()
         observeObservers()
-        sseClient.startSse()
+
+        val eventSourceListener = object: EventSourceListener() {
+            override fun onEvent(
+                eventSource: EventSource,
+                id: String?,
+                type: String?,
+                data: String
+            ) {
+
+                val jsonObject = JsonParser.parseString(data).asJsonObject
+                val report = Gson().fromJson(jsonObject, Report::class.java)
+                if(report.picture != null) {
+                    Log.e("TEST", "onEvent : $data")
+                    myDataRepository.addNewReport(report)
+                    repository.addNewReport(report)
+                }
+
+                super.onEvent(eventSource, id, type, data)
+            }
+
+            override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
+                super.onFailure(eventSource, t, response)
+            }
+
+            override fun onOpen(eventSource: EventSource, response: Response) {
+                // 연결 성공 시 처리
+                super.onOpen(eventSource, response)
+            }
+
+            override fun onClosed(eventSource: EventSource) {
+                sseClient.startSse(this)
+                super.onClosed(eventSource)
+            }
+        }
+        sseClient.startSse(eventSourceListener)
     }
 
     fun sendIntent(intent: MainIntent) = viewModelScope.launch(Dispatchers.IO) {
@@ -118,9 +165,12 @@ class MainViewModel @Inject constructor(
 
     private fun updateObserverList() {
         CoroutineScope(Dispatchers.IO).launch {
+            myDataRepository.addObserver(Observer())
+
             val list = ArrayList<Observer>()
             list.add(Observer())
             for (fetcher in fetcherList.value) {
+
                 val observerResponse = retrofit.getObserverList(fetcher.fetchId)
                 if (observerResponse.isSuccessful) {
                     val data = observerResponse.body()?.data
@@ -128,22 +178,26 @@ class MainViewModel @Inject constructor(
                 }
             }
 
-            myDataRepository.addObserverList(list)
+            myDataRepository.updateObserverList(list)
         }
     }
 
     private fun updateReportList() {
         CoroutineScope(Dispatchers.IO).launch {
+            val reportList: ArrayList<Report> = ArrayList()
             for (observer in observerList.value) {
                 val response = retrofit.getReportList(observer.observerId)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val observerReportList = response.body()!!.data
-                        myDataRepository.addReportList(observerReportList)
+                        reportList.addAll(observerReportList)
+
                     }
                 }
             }
+
+            myDataRepository.updateReportList(reportList)
         }
     }
 
@@ -190,8 +244,38 @@ class MainViewModel @Inject constructor(
             val response = retrofit.requestPick(selectedReport.value.reportId)
             if(response.isSuccessful) {
                 Log.e("TEST", response.body().toString())
+                notifyRepository.showNotify(response.body()!!.message)
+            } else {
+
             }
         }
+    }
 
+    fun changeObserver(observer: Observer) {
+        repository.changeObserver(observer)
+    }
+
+    fun addNewReport(report: Report) {
+        repository.addNewReport(report)
+    }
+
+    fun resetNewReports() {
+        repository.resetNewReports()
+    }
+
+    fun showNewNotify() {
+        repository.setNotify(true)
+    }
+
+    fun hideNewNotify() {
+        repository.setNotify(false)
+    }
+
+    fun removeReport(report: Report) {
+        myDataRepository.removeReport(report)
+    }
+
+    fun moveToReport(index: Int) {
+        repository.setMoveReportIndex(index)
     }
 }

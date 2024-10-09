@@ -23,6 +23,9 @@ class MyDataRepository @Inject constructor() {
     private val _observerList = MutableStateFlow<List<Observer>>(ArrayList())
     val observerList: StateFlow<List<Observer>> = _observerList
 
+    private var _observerMap: HashMap<Long, Observer> = HashMap()
+    val observerMap = _observerMap
+
     private val _reportList = MutableStateFlow<List<Report>>(ArrayList())
     val reportList: StateFlow<List<Report>> = _reportList
 
@@ -42,20 +45,29 @@ class MyDataRepository @Inject constructor() {
     }
 
     fun addObserver(observer: Observer) {
-        //_observerArrayList.add(observer)
-        //_observerList.value = _observerArrayList
+        val updatedList = _observerList.value.toMutableList()
+        updatedList.add(observer)
+        _observerList.value = updatedList
+        _observerMap[observer.observerId] = observer
     }
 
-    fun addObserverList(observerList: List<Observer>) {
-        val updatedList = _observerList.value.toMutableList()
-        updatedList.addAll(observerList)
-        _observerList.value = updatedList
+    fun updateObserverList(observerList: List<Observer>) {
+        _observerList.value = observerList
+
+        _observerMap = HashMap()
+        for(observer in observerList) {
+            _observerMap[observer.observerId] = observer
+        }
     }
 
     fun addReportList(pictureList: List<Report>) {
         val updatedList = _reportList.value.toMutableList()
         updatedList.addAll(pictureList)
         _reportList.value = updatedList
+    }
+
+    fun updateReportList(reportList: List<Report>) {
+        _reportList.value = reportList
     }
 
     fun updateDeviceList(productList: List<Product>) {
@@ -65,5 +77,12 @@ class MyDataRepository @Inject constructor() {
     fun removeReport(report: Report) {
         val updatedList = reportList.value.toMutableList()
         updatedList.remove(report)
+        _reportList.value = updatedList
+    }
+
+    fun addNewReport(report: Report) {
+        val updatedList = _reportList.value.toMutableList()
+        updatedList.add(0, report)
+        _reportList.value = updatedList
     }
 }
