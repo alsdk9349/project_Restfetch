@@ -67,18 +67,24 @@ fun PreviewCamera(onDismissRequest: () -> Unit) {
         },
         confirmButton = {
             Button(onClick = {
-                if (productType.value == 1) {
-                    myPageViewModel.addFetcher(
-                        serialNumber.value,
-                        nickname.value
-                    )
-                } else if(productType.value == 2) {
-                    myPageViewModel.addObserver(
-                        serialNumber.value,
-                        parentFetcher.value.fetchSerialNumber,
-                        nickname.value
-                    )
+                if(serialNumber.value != "" && nickname.value != "") {
+                    if (productType.value == 1) {
+                        myPageViewModel.addFetcher(
+                            serialNumber.value,
+                            nickname.value
+                        )
+                    } else if(productType.value == 2) {
+                        if(parentFetcher.value.fetchSerialNumber != "") {
+                            myPageViewModel.addObserver(
+                                serialNumber.value,
+                                parentFetcher.value.fetchSerialNumber,
+                                nickname.value
+                            )
+                        }
+                    }
+                    viewModel.updateSelectFetcherState(false)
                 }
+
             }) {
                 Text("등록")
             }
@@ -133,6 +139,7 @@ fun DeviceNicknameInput(nickname: String, onNicknameChange: (String) -> Unit) {
 @Composable
 fun SelectFetcher() {
     val viewModel: QRScannerViewModel = hiltViewModel()
+    val parentFetcher = viewModel.parentFetcher.collectAsState()
     OutlinedButton(
         onClick = { viewModel.updateSelectFetcherState(true) },
         contentPadding = OutlinedTextFieldDefaults.contentPadding(),
@@ -147,7 +154,7 @@ fun SelectFetcher() {
             contentAlignment = Alignment.CenterStart // 왼쪽 정렬
         ) {
             Text(
-                text = "Fetch 선택",
+                text = parentFetcher.value.fetchName.ifEmpty { "Fetch 선택" },
                 fontSize = 20.sp,
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Normal
@@ -165,11 +172,6 @@ fun MyFetcherList(onDismissRequest: () -> Unit) {
     val fetcherList = viewModel.fetcherList.collectAsState()
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        /*dismissButton = {
-            Button(onClick = onDismissRequest) {
-                Text("취소")
-            }
-        },*/
         confirmButton = {
             Button(onClick = onDismissRequest) {
                 Text("확인")

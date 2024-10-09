@@ -32,11 +32,14 @@ class QRScannerRepository @Inject constructor() {
         updateSerialNumber("")
         updateProductNickname("")
         updateSelectFetcherState(false)
-        setParentFetcher(Fetcher(0, "", "Fetcher 선택"))
+        setParentFetcher(Fetcher())
     }
 
     fun updateScanState(state: Boolean) {
-        _qrScannerState.value.qrScanState = state
+        if(_qrScannerState.value.qrScanState != state) {
+            _qrScannerState.value.qrScanState = state
+        }
+
     }
 
     fun updateProductType(type: Int) {
@@ -52,6 +55,9 @@ class QRScannerRepository @Inject constructor() {
     }
 
     fun updateSelectFetcherState(state: Boolean) {
+        if(!state) {
+            setParentFetcher(Fetcher())
+        }
         _selectFetcherState.value = state
     }
 

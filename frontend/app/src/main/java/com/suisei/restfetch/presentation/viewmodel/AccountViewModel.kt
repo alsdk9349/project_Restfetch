@@ -115,6 +115,11 @@ class AccountViewModel @Inject constructor(
 
         val body = mapOf("email" to email)
 
+        if(email == "") {
+            notifyRepository.showNotify("이메일이 입력되지 않았습니다.")
+            return
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = retrofit.requestCode(body)
@@ -163,6 +168,11 @@ class AccountViewModel @Inject constructor(
     fun createAccount(email: String, password: String, nickname: String) {
         val body = mapOf("email" to email, "password" to password, "nickname" to nickname)
 
+        if(email == "" || password == "" || nickname == "") {
+            notifyRepository.showNotify("누락된 입력이 있습니다.")
+            return
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             val response = retrofit.signup(body)
 
@@ -206,16 +216,15 @@ class AccountViewModel @Inject constructor(
                         onSuccess()
                     }
                 } else {
-                    handleResponseError(response.errorBody())
+                    handleResponseError(response.errorBody()!!)
                 }
             }
         }
     }
 
-    private fun handleResponseError(errorResponseBody: ResponseBody?) {
-        Log.e("TEST", errorResponseBody!!.string())
+    private fun handleResponseError(errorResponseBody: ResponseBody) {
         val error = JsonParser.parseString(errorResponseBody.string()).asJsonObject
-        Log.e("TEST", "handleResponseError")
+        notifyRepository.showNotify(error.get("message").asString)
     }
 
     fun requestGoogleAuth(context: Context) {

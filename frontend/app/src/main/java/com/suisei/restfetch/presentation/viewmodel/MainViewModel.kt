@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Response
+import okhttp3.ResponseBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import javax.inject.Inject
@@ -246,7 +247,7 @@ class MainViewModel @Inject constructor(
                 Log.e("TEST", response.body().toString())
                 notifyRepository.showNotify(response.body()!!.message)
             } else {
-
+                handleResponseError(response.errorBody()!!)
             }
         }
     }
@@ -277,5 +278,10 @@ class MainViewModel @Inject constructor(
 
     fun moveToReport(index: Int) {
         repository.setMoveReportIndex(index)
+    }
+
+    private fun handleResponseError(errorResponseBody: ResponseBody) {
+        val error = JsonParser.parseString(errorResponseBody.string()).asJsonObject
+        notifyRepository.showNotify(error.get("message").asString)
     }
 }

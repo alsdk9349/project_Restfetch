@@ -2,17 +2,24 @@ package com.suisei.restfetch.presentation.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.gson.JsonParser
 import com.suisei.restfetch.data.model.RegisterObserver
 import com.suisei.restfetch.data.remote.ServerClient
 import com.suisei.restfetch.data.repository.MyDataRepository
+import com.suisei.restfetch.data.repository.NotifyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import okhttp3.internal.notify
 import javax.inject.Inject
 
 @HiltViewModel
-class MyPageViewModel @Inject constructor(private val myDataRepository: MyDataRepository) :
+class MyPageViewModel @Inject constructor(
+    private val myDataRepository: MyDataRepository,
+    private val notifyRepository: NotifyRepository
+) :
     ViewModel() {
     val userData = myDataRepository.userData
 
@@ -24,26 +31,36 @@ class MyPageViewModel @Inject constructor(private val myDataRepository: MyDataRe
             body["fetchSerialNumber"] = serialNumber
             body["nickname"] = nickname
             val response = deviceAPI.registerFetcher(body)
-            if(response.isSuccessful) {
-                Log.e("TEST", response.body().toString())
+            if (response.isSuccessful) {
+                notifyRepository.showNotify(response.body()!!.message)
             } else {
-                Log.e("TEST", response.errorBody()!!.string())
+                handleResponseError(response.errorBody()!!)
             }
         }
     }
 
     fun addObserver(observerSerialNumber: String, fetchSerialNumber: String, nickname: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val body = RegisterObserver(observerSerialNumber, fetchSerialNumber, latitude = 0.0, longitude = 0.0, nickname)
+            val body = RegisterObserver(
+                observerSerialNumber,
+                fetchSerialNumber,
+                latitude = 0.0,
+                longitude = 0.0,
+                nickname
+            )
 
             val response = deviceAPI.registerObserver(body)
-            if(response.isSuccessful) {
-                Log.e("TEST", response.body().toString())
+            if (response.isSuccessful) {
+                notifyRepository.showNotify(response.body()!!.message)
             } else {
-                Log.e("TEST", response.errorBody()!!.string())
+                handleResponseError(response.errorBody()!!)
             }
         }
+    }
 
+    private fun handleResponseError(errorResponseBody: ResponseBody) {
+        val error = JsonParser.parseString(errorResponseBody.string()).asJsonObject
+        notifyRepository.showNotify(error.get("message").asString)
     }
 }
 
