@@ -13,7 +13,7 @@ public class FetchObserver {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "memberFetch_id", columnDefinition = "int unsigned")
+    @Column(name = "fetchObeserver_id", columnDefinition = "int unsigned")
     private Long fetchObserverId;  // ID 필드를 별도로 정의해야 함
 
     @ManyToOne
