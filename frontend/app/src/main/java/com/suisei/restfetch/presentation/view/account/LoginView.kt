@@ -46,7 +46,7 @@ fun LoginScreen(navController: NavController) {
     val viewModel: AccountViewModel = hiltViewModel()
 
     //auto login
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         val sharedPreferences =
             context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
 
@@ -62,7 +62,7 @@ fun LoginScreen(navController: NavController) {
                 }
             }
         }
-    }
+    }*/
 
     AccountTemplate {
         LogoImage()

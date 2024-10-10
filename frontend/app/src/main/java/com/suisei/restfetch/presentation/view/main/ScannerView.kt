@@ -49,14 +49,11 @@ import com.suisei.restfetch.presentation.viewmodel.QRScannerViewModel
 fun PreviewCamera(onDismissRequest: () -> Unit) {
     val viewModel: QRScannerViewModel = hiltViewModel()
     val myPageViewModel: MyPageViewModel = hiltViewModel()
-    val scanState = viewModel.qrScannerState.collectAsState()
     val productType = viewModel.productType.collectAsState()
     val serialNumber = viewModel.serialNumber.collectAsState()
     val nickname = viewModel.productNickname.collectAsState()
     val selectFetcherState = viewModel.selectFetcherState.collectAsState()
     val parentFetcher = viewModel.parentFetcher.collectAsState()
-
-    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -82,7 +79,8 @@ fun PreviewCamera(onDismissRequest: () -> Unit) {
                             )
                         }
                     }
-                    viewModel.updateSelectFetcherState(false)
+
+                    onDismissRequest()
                 }
 
             }) {
@@ -114,10 +112,6 @@ fun PreviewCamera(onDismissRequest: () -> Unit) {
                             viewModel.updateSelectFetcherState(false)
                         }
                     }
-                }
-
-                if (scanState.value.qrScanState) {
-                    Toast.makeText(context, "스캔 성공", Toast.LENGTH_SHORT).show()
                 }
             }
         })
@@ -151,10 +145,10 @@ fun SelectFetcher() {
         Box(
             modifier = Modifier
                 .fillMaxWidth(),
-            contentAlignment = Alignment.CenterStart // 왼쪽 정렬
+            contentAlignment = Alignment.CenterStart
         ) {
             Text(
-                text = parentFetcher.value.fetchName.ifEmpty { "Fetch 선택" },
+                text = parentFetcher.value.fetchName.ifEmpty { "Fetcher 선택" },
                 fontSize = 20.sp,
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Normal
@@ -170,6 +164,7 @@ fun MyFetcherList(onDismissRequest: () -> Unit) {
     val qrScannerViewModel: QRScannerViewModel = hiltViewModel()
 
     val fetcherList = viewModel.fetcherList.collectAsState()
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {

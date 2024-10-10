@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,7 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -59,6 +62,9 @@ import com.suisei.restfetch.presentation.view.theme.dropdownBackgroundColor
 import com.suisei.restfetch.presentation.view.theme.fetchButtonColor
 import com.suisei.restfetch.presentation.view.theme.menuButtonBorderColor
 import com.suisei.restfetch.presentation.viewmodel.MainViewModel
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun HomeScreen(homeViewState: HomeViewState) {
@@ -201,12 +207,11 @@ fun AreaSelector() {
 fun NotificationButton() {
     var showDialog by remember { mutableStateOf(false) }
     val viewModel: MainViewModel = hiltViewModel()
-    val newReports = viewModel.newReports.collectAsState()
     val newNotify = viewModel.notifyState.collectAsState()
-    val notifyNewReport = viewModel.notifyNewReports.collectAsState()
+    val newReports = viewModel.newReports.collectAsState()
     Button(
         onClick = {
-            if (newNotify.value) {
+            if (newReports.value.isNotEmpty()) {
                 showDialog = true
                 viewModel.hideNewNotify()
             }
@@ -223,18 +228,17 @@ fun NotificationButton() {
                     .size(42.dp)
                     .padding(0.dp)
             )
-            if (notifyNewReport.value) {
+            if (newNotify.value > 0) {
                 Text(
-                    newReports.value.size.toString(),
+                    newNotify.value.toString(),
                     modifier = Modifier
                         .background(Color.Red, shape = RoundedCornerShape(12.dp))
                         .align(Alignment.TopEnd)
-                        .padding(1.dp)
+                        .padding(4.dp)
                         .wrapContentHeight(),
                     color = backgroundColor()
                 )
             }
-
         }
 
         NotificationList(showDialog = showDialog, dismissList = { showDialog = false })
@@ -247,15 +251,17 @@ fun ReportList() {
     val viewModel: MainViewModel = hiltViewModel()
     val reportList by viewModel.reportList.collectAsState()
     val crtLocation = viewModel.crtLocation.collectAsState()
-
+    val waitPickSet by viewModel.waitPickSet.collectAsState()
+    val crtPicking by viewModel.crtPicking.collectAsState()
     val listState = rememberLazyListState()
 
-    var scrollToIndex by remember { mutableStateOf(-1) }
+    //var scrollToIndex by remember { mutableIntStateOf(-1) }
+    val scrollToIndex by viewModel.moveReportIndex.collectAsState()
 
     LaunchedEffect(scrollToIndex) {
         if (scrollToIndex in reportList.indices) {
             listState.scrollToItem(scrollToIndex)
-            scrollToIndex = -1 // 스크롤 후 초기화
+            viewModel.moveToReport(-1)// 스크롤 후 초기화
         }
     }
     Column {
@@ -267,13 +273,15 @@ fun ReportList() {
             state = listState
         ) {
             items(reportList.size) { index ->
-                if (crtLocation.value.location == "전체" || crtLocation.value.observerId == reportList[index].observerId) {
+                if ((crtLocation.value.location == "전체" || crtLocation.value.observerId == reportList[index].observerId) && !reportList[index].picked) {
                     val imageBitmap = viewModel.stringToImageBitmap(reportList[index].picture)
                     if (imageBitmap != null) {
                         FallenObject(
                             reportList[index],
                             imageBitmap,
-                            imageObject = /*reportList[index].reportId.toString()*/"약통"
+                            imageObject = if(crtPicking == reportList[index].reportId) "회수 진행중"
+                                else if(waitPickSet.contains(reportList[index].reportId)) "회수 대기중"
+                                else "약통"
                         )
                     }
 
@@ -287,26 +295,27 @@ fun ReportList() {
 @Composable
 fun NotificationList(showDialog: Boolean, dismissList: () -> Unit) {
     val viewModel: MainViewModel = hiltViewModel()
-    val observerMap = viewModel.observerMap
-    val newReportList = viewModel.newReports.collectAsState()
-    val density = LocalDensity.current
+    val observerMap by viewModel.observerMap.collectAsState()
+    val newReportList by viewModel.newReports.collectAsState()
 
     DropdownMenu(
         containerColor = backgroundColor(),
         modifier = Modifier
             .fillMaxWidth(0.55f)
-            .heightIn(max = (0.7f * density.density).dp),
+            .heightIn(max = 600.dp),
         offset = DpOffset(0.dp, 6.dp),
         expanded = showDialog,
         onDismissRequest = dismissList
     ) {
-        newReportList.value.forEachIndexed { index, report ->
+        newReportList.forEachIndexed { index, report ->
             DropdownMenuItem(text = {
                 Text(
-                    text = "${observerMap[report.observerId]?.location} : ${report.pictureName}",
+                    text =
+                    "${observerMap[report.observerId]?.location} : ${report.pictureName} 발견",
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
-                    fontSize = 24.sp
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Normal
                 )
             },
                 onClick = {
@@ -334,13 +343,16 @@ fun FallenObject(item: Report, picture: ImageBitmap, imageObject: String) {
         modifier = Modifier.padding(4.dp, 16.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-                bitmap = picture,
-                contentDescription = "Fallen"
-            )
-            Text(imageObject, fontSize = 28.sp, color = Color.Black)
+        Box(modifier = Modifier) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    bitmap = picture,
+                    contentDescription = "Fallen"
+                )
+                Text(imageObject, fontSize = 28.sp, color = Color.Black)
+            }
         }
+
     }
 }
 
@@ -358,7 +370,7 @@ fun FetchButton(modifier: Modifier) {
         onClick = {
             viewModel.requestPick()
             viewModel.sendIntent(MainIntent.HideFetchButton)
-            viewModel.removeReport(selectedReport.value)
+            //viewModel.removeReport(selectedReport.value)
         },
         colors = fetchButtonColor(),
         modifier = modifier

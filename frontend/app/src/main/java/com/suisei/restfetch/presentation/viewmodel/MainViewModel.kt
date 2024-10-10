@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
@@ -61,10 +60,12 @@ class MainViewModel @Inject constructor(
 
     val observerMap = myDataRepository.observerMap
     val newReports = repository.newReports
-    val notifyNewReports = repository.notify
-    val notifyState = repository.notify
+    val notifyState = repository.newReportNotify
 
     val moveReportIndex = repository.moveReportIndex
+
+    val crtPicking = myDataRepository.crtPicking
+    val waitPickSet = myDataRepository.waitPickSet
 
     init {
 
@@ -81,25 +82,41 @@ class MainViewModel @Inject constructor(
                 type: String?,
                 data: String
             ) {
-
                 val jsonObject = JsonParser.parseString(data).asJsonObject
                 val report = Gson().fromJson(jsonObject, Report::class.java)
-                if(report.picture != null) {
-                    Log.e("TEST", "onEvent : $data")
-                    myDataRepository.addNewReport(report)
-                    repository.addNewReport(report)
+                Log.e("TEST", report.toString())
+                if(!myDataRepository.reportIdSet.value.contains(report.reportId)) {
+                    if(report.picture != null) {
+                        myDataRepository.addNewReport(report)
+                        repository.addNewReport(report)
+                        repository.increaseNewReportCount()
+                        Log.e("TEST", "새로운 이미지 발견")
+                    }
+                } else {
+
+                    if(myDataRepository.crtPicking.value != report.reportId && !report.picked) {
+                        myDataRepository.setCrtPicking(report.reportId)
+                    } else if(myDataRepository.crtPicking.value == report.reportId && report.picked) {
+                        myDataRepository.removeReport(report.reportId)
+                        myDataRepository.setCrtPicking(-1)
+                    }
+                    /*if(type == "물건 회수 시작했습니다") {
+                        myDataRepository.setCrtPicking(report.reportId)
+                    } else if(type == "물건을 회수했습니다.") {
+                        myDataRepository.removeReport(report.reportId)
+                        myDataRepository.setCrtPicking(-1)
+                    }*/
+                    /*if(myDataRepository.crtPicking.value != report.reportId) {
+                        myDataRepository.setCrtPicking(report.reportId)
+                        Log.e("TEST", "회수 시작")
+                    } else {
+                        myDataRepository.removeReport(report.reportId)
+                        myDataRepository.setCrtPicking(-1)
+                        Log.e("TEST", "회수 종료")
+                    }*/
                 }
 
                 super.onEvent(eventSource, id, type, data)
-            }
-
-            override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
-                super.onFailure(eventSource, t, response)
-            }
-
-            override fun onOpen(eventSource: EventSource, response: Response) {
-                // 연결 성공 시 처리
-                super.onOpen(eventSource, response)
             }
 
             override fun onClosed(eventSource: EventSource) {
@@ -129,12 +146,10 @@ class MainViewModel @Inject constructor(
 
     private fun loadHome() {
         repository.updateState(MainViewState.Home(lastHomeViewState))
-        //_state.value =
     }
 
     private fun loadMyPage() {
         repository.updateState(MainViewState.MyPage(lastMyPageState))
-        //_state.value =
     }
 
     private fun setFetchButtonVisibility(visibility: Boolean) {
@@ -244,7 +259,7 @@ class MainViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val response = retrofit.requestPick(selectedReport.value.reportId)
             if(response.isSuccessful) {
-                Log.e("TEST", response.body().toString())
+                myDataRepository.addPickRequest(selectedReport.value.reportId)
                 notifyRepository.showNotify(response.body()!!.message)
             } else {
                 handleResponseError(response.errorBody()!!)
@@ -264,16 +279,8 @@ class MainViewModel @Inject constructor(
         repository.resetNewReports()
     }
 
-    fun showNewNotify() {
-        repository.setNotify(true)
-    }
-
     fun hideNewNotify() {
-        repository.setNotify(false)
-    }
-
-    fun removeReport(report: Report) {
-        myDataRepository.removeReport(report)
+        repository.resetNewReportCount()
     }
 
     fun moveToReport(index: Int) {

@@ -5,6 +5,7 @@ import com.suisei.restfetch.data.model.Fetcher
 import com.suisei.restfetch.presentation.state.QRScannerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class QRScannerRepository @Inject constructor() {
@@ -13,7 +14,7 @@ class QRScannerRepository @Inject constructor() {
     private val _isCameraBind = MutableStateFlow(false)
     val isCameraBind: StateFlow<Boolean> = _isCameraBind
     private val _parentFetcher = MutableStateFlow(Fetcher(0, "", "Fetcher 선택"))
-    val parentFetcher: StateFlow<Fetcher> = _parentFetcher
+    val parentFetcher = _parentFetcher.asStateFlow()
 
     private val _productType = MutableStateFlow(0)
     val productType: StateFlow<Int> = _productType
@@ -55,13 +56,11 @@ class QRScannerRepository @Inject constructor() {
     }
 
     fun updateSelectFetcherState(state: Boolean) {
-        if(!state) {
-            setParentFetcher(Fetcher())
-        }
         _selectFetcherState.value = state
     }
 
     fun setParentFetcher(fetcher: Fetcher) {
+        Log.e("TEST", fetcher.toString())
         _parentFetcher.value = fetcher
     }
 }

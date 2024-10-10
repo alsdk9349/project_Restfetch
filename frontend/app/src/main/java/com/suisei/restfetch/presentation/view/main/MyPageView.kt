@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,7 +50,7 @@ fun MyPageScreen() {
     val viewModel: MyPageViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
     val userData = viewModel.userData.collectAsState()
-
+    val reportList = viewModel.reportList.collectAsState()
     val qrScannerViewModel: QRScannerViewModel = hiltViewModel()
     val qrScanState = qrScannerViewModel.qrScannerState.collectAsState()
 
@@ -73,7 +75,7 @@ fun MyPageScreen() {
                 modifier = Modifier.size(80.dp)
             )
             Text(userData.value.nickname, fontSize = 24.sp)
-            Text("사용 횟수 : " + "10", fontSize = 24.sp)
+            Text("사용 횟수 : ${reportList.value.count { it.picked }}", fontSize = 24.sp)
         }
 
 
@@ -106,8 +108,9 @@ fun MyPageScreen() {
 
         if (qrScanState.value.scanning) {
             PreviewCamera {
-                qrScannerViewModel.sendIntent(QRScannerIntent.HideQRRegistration)
                 qrScannerViewModel.stopCamera()
+                qrScannerViewModel.sendIntent(QRScannerIntent.HideQRRegistration)
+                qrScannerViewModel.updateSelectFetcherState(false)
             }
         }
 
@@ -140,45 +143,53 @@ fun MyDeviceList(onDismissRequest: () -> Unit) {
         },
         text = {
             Row(modifier = Modifier.fillMaxWidth()) {
-                LazyColumn(
-                    modifier = Modifier.weight(0.5f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-                    contentPadding = PaddingValues(4.dp)
-                ) {
-                    items(fetcherList.value.size) { index ->
+                Column(modifier = Modifier.weight(0.5f)) {
+                    Text("Fetcher", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    LazyColumn(
+                        modifier = Modifier.heightIn(max = 600.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                        contentPadding = PaddingValues(4.dp)
+                    ) {
+                        items(fetcherList.value.size) { index ->
 
-                        DeviceItem(
-                            fetcherList.value[index].fetchName,
-                            fetcherList.value[index].fetchSerialNumber
-                        ) {
+                            DeviceItem(
+                                fetcherList.value[index].fetchName,
+                                fetcherList.value[index].fetchSerialNumber
+                            ) {
 
+                            }
                         }
                     }
                 }
-                LazyColumn(
-                    modifier = Modifier.weight(0.5f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-                    contentPadding = PaddingValues(4.dp)
-                ) {
-                    items(observerList.value.size - 1) { index ->
-                        DeviceItem(
-                            observerList.value[index + 1].location,
-                            observerList.value[index + 1].observerSerialNumber
-                        ) {
 
+                Column(modifier = Modifier.weight(0.5f)) {
+                    Text("Observer", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    LazyColumn(
+                        modifier = Modifier.heightIn(max = 600.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                        contentPadding = PaddingValues(4.dp)
+                    ) {
+                        items(observerList.value.size - 1) { index ->
+                            DeviceItem(
+                                observerList.value[index + 1].location,
+                                observerList.value[index + 1].observerSerialNumber
+                            ) {
+
+                            }
                         }
                     }
                 }
+
             }
         })
 }
 
 @Composable
 fun DeviceItem(nickname: String, serialNumber: String, onClick: () -> Unit) {
-    BasicButton(onClick = onClick) {
+    BasicButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Column {
-            Text(nickname)
-            Text(serialNumber)
+            Text(nickname, maxLines = 1, textAlign = TextAlign.Center)
+            Text(serialNumber, maxLines = 1, textAlign = TextAlign.Center)
         }
     }
 }

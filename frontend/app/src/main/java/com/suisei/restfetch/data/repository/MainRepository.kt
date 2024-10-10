@@ -26,8 +26,8 @@ class MainRepository @Inject constructor() {
     private val _newReports: MutableStateFlow<List<Report>> = MutableStateFlow(ArrayList())
     val newReports: StateFlow<List<Report>> = _newReports
 
-    private val _notify = MutableStateFlow(false)
-    val notify: StateFlow<Boolean> = _notify
+    private val _newReportNotify = MutableStateFlow(0)
+    val newReportNotify: StateFlow<Int> = _newReportNotify
 
     private val _moveReportIndex = MutableStateFlow(-1)
     val moveReportIndex: StateFlow<Int> = _moveReportIndex
@@ -54,20 +54,23 @@ class MainRepository @Inject constructor() {
 
     fun addNewReport(report: Report) {
         val updatedList = _newReports.value.toMutableList()
-        updatedList.add(report)
+        updatedList.add(0, report)
         _newReports.value = updatedList
     }
 
     fun resetNewReports() {
          _newReports.value = ArrayList()
-
     }
 
     fun setMoveReportIndex(index: Int) {
         _moveReportIndex.value = index
     }
 
-    fun setNotify(state: Boolean) {
-        _notify.value = state
+    fun increaseNewReportCount() {
+        _newReportNotify.value += 1
+    }
+
+    fun resetNewReportCount() {
+        _newReportNotify.value = 0
     }
 }

@@ -22,7 +22,7 @@ class MyPageViewModel @Inject constructor(
 ) :
     ViewModel() {
     val userData = myDataRepository.userData
-
+    val reportList = myDataRepository.reportList
     private val deviceAPI = ServerClient.deviceAPI
 
     fun addFetcher(serialNumber: String, nickname: String) {
@@ -30,8 +30,11 @@ class MyPageViewModel @Inject constructor(
             val body: HashMap<String, String> = HashMap()
             body["fetchSerialNumber"] = serialNumber
             body["nickname"] = nickname
+
             val response = deviceAPI.registerFetcher(body)
             if (response.isSuccessful) {
+                Log.e("TEST", body.toString())
+                myDataRepository.addFetcher(response.body()!!.data)
                 notifyRepository.showNotify(response.body()!!.message)
             } else {
                 handleResponseError(response.errorBody()!!)
@@ -44,13 +47,15 @@ class MyPageViewModel @Inject constructor(
             val body = RegisterObserver(
                 observerSerialNumber,
                 fetchSerialNumber,
-                latitude = 0.0,
-                longitude = 0.0,
+                latitude = 6.735,
+                longitude = 1.434,
                 nickname
             )
 
             val response = deviceAPI.registerObserver(body)
             if (response.isSuccessful) {
+                Log.e("TEST", body.toString())
+                myDataRepository.addObserver(response.body()!!.data)
                 notifyRepository.showNotify(response.body()!!.message)
             } else {
                 handleResponseError(response.errorBody()!!)

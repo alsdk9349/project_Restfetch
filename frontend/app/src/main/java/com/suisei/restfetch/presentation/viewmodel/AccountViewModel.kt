@@ -132,6 +132,8 @@ class AccountViewModel @Inject constructor(
                         } else {
                             notifyRepository.showNotify(responseBody.message)
                         }
+                    } else {
+                        handleResponseError(response.errorBody()!!)
                     }
                 }
             } catch (e: Exception) {
