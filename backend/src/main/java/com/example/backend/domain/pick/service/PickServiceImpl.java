@@ -122,17 +122,17 @@ public class PickServiceImpl implements PickService {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
 
-        if (report.isPicked()) {
-            throw new BusinessException(ErrorCode.REPORT_ALREADY_PICK);
-        }
+//        if (report.isPicked()) {
+//            throw new BusinessException(ErrorCode.REPORT_ALREADY_PICK);
+//        }
+//
+//        report.setPicked(true);
+//        reportRepository.save(report);
 
-        report.setPicked(true);
-        reportRepository.save(report);
-
-        Pick pick = pickRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.PICK_NOT_FOUND));
-
-        pickRepository.delete(pick);
+//        Pick pick = pickRepository.findAll().stream().findFirst()
+//                .orElseThrow(() -> new BusinessException(ErrorCode.PICK_NOT_FOUND));
+//
+//        pickRepository.delete(pick);
 
 
         return PickCheckResponseDto.of(report);
@@ -149,7 +149,12 @@ public class PickServiceImpl implements PickService {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
 
-        Observer observer = report.getObserver();
+        if (report.isPicked()) {
+            throw new BusinessException(ErrorCode.REPORT_ALREADY_PICK);
+        }
+
+        report.setPicked(true);
+        reportRepository.save(report);
 
         ReportGetResponseDto responseDto = ReportGetResponseDto.builder()
                 .reportId(report.getId())
