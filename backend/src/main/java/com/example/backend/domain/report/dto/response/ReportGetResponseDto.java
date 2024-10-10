@@ -50,7 +50,7 @@ public class ReportGetResponseDto {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"message\": ").append(message).append(", ");
-        sb.append("{ \"reportId\": ").append(reportId).append(", ");
+        sb.append("\"reportId\": ").append(reportId).append(", ");
         sb.append("\"observerId\": ").append(observerId).append(", ");
         sb.append("\"observerSerialNumber\": \"").append(observerSerialNumber).append("\", ");
         sb.append("\"picture\": \"").append(picture).append("\", ");
