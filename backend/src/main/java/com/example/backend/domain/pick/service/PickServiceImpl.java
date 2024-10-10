@@ -99,8 +99,7 @@ public class PickServiceImpl implements PickService {
 
         Pick pick = picks.get(0);
 
-        Report report = pickRepository.findByPick(pick)
-                .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
+        Report report = pick.getReport();
 
         ReportGetResponseDto responseDto = ReportGetResponseDto.builder()
                 .reportId(report.getId())
