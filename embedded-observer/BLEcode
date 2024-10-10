@@ -1,53 +1,81 @@
 import asyncio
+import base64
+import requests  # API 호출을 위한 라이브러리
 from bleak import BleakClient
+from datetime import datetime
 
 # ESP32-CAM의 BLE 장치 주소와 특성 UUID 설정
-BLE_ADDRESS = "30:C9:22:E2:90:CE"  # ESP32-CAM의 MAC 주소 (LightBlue 앱에서 확인 가능)
-CHARACTERISTIC_UUID = "abcdef01-1234-5678-1234-56789abcdef1"  # ESP32-CAM의 특성 UUID
+BLE_ADDRESS = "30:C9:22:E2:90:CE"
+CHARACTERISTIC_UUID = "abcdef01-1234-5678-1234-56789abcdef1"
 
-# 이미지 파일 저장을 위한 카운터
-image_counter = 1
+# API 엔드포인트 및 헤더 설정
+API_URL = "http://j11c209.p.ssafy.io:8080/observer/report"
+HEADERS = {"Content-Type": "application/json"}
 
-async def save_image(image_data):
-    global image_counter
-    # 이미지 파일을 1.jpg, 2.jpg, 3.jpg 형식으로 저장
-    image_file_path = f"received_image_{image_counter}.jpg"
-    with open(image_file_path, "wb") as image_file:
-        image_file.write(image_data)
-    print(f"Image saved to {image_file_path}")
-    image_counter += 1  # 다음 이미지 파일 번호로 증가
+# 옵저버 시리얼 넘버 설정
+OBSERVER_SERIAL_NUMBER = "OBSERVER20241010 "
+
+
+async def send_image_to_api(image_data):
+    try:
+
+
+        # Base64로 인코딩된 이미지를 JSON 형식으로 변환
+        encoded_image = base64.b64encode(image_data).decode('utf-8')
+
+        # API에 전송할 JSON 데이터 생성
+        json_data = {
+            "observerSerialNumber": OBSERVER_SERIAL_NUMBER,
+            "picture": encoded_image
+        }
+
+        # 디버깅: 전송되는 이미지 데이터 및 JSON 출력
+        print(f"Encoded image (first 100 chars): {encoded_image[:100]}...")  # 첫 100자의 인코딩된 이미지 데이터
+        print(f"Observer Serial Number: {OBSERVER_SERIAL_NUMBER}")
+        print(f"Sending JSON data: {json_data}")
+
+        # API에 POST 요청 전송
+        response = requests.post(API_URL, json=json_data, headers=HEADERS)
+
+        # 응답 확인
+        if response.status_code == 200:
+            print("Image successfully uploaded to the server")
+        else:
+            print(f"Failed to upload image. Status code: {response.status_code}, Response: {response.text}")
+
+    except Exception as e:
+        print(f"Error during API call: {e}")
+
 
 async def main():
-    global image_counter
-    # BLE 장치에 연결
     async with BleakClient(BLE_ADDRESS) as client:
         print(f"Connected to {BLE_ADDRESS}")
 
         while True:
-            # Notify 활성화하여 데이터 수신
-            image_data = bytearray()  # 이미지를 저장할 바이트 배열
+            image_data = bytearray()
 
             def notification_handler(sender: int, data: bytearray):
-                """ 수신된 데이터를 처리하는 핸들러 """
                 nonlocal image_data
-                print(f"Received {len(data)} bytes")
-                image_data.extend(data)  # 수신된 데이터 누적
+                data_str = data.decode('utf-8', errors='ignore')
 
-            # Notify 기능 활성화
+                if "IMG_START" in data_str:
+                    print("Image transfer started")
+                    image_data.clear()  # 데이터 초기화
+                elif "IMG_END" in data_str:
+                    print("Image transfer completed")
+                    asyncio.create_task(send_image_to_api(image_data))  # 이미지 API로 전송
+                else:
+                    print(f"Received {len(data)} bytes")
+                    image_data.extend(data)  # 데이터 누적
+
             await client.start_notify(CHARACTERISTIC_UUID, notification_handler)
             print("Listening for image data...")
 
-            # 60초 동안 데이터를 수신 (1분 동안 데이터 수신)
-            await asyncio.sleep(60)
+            await asyncio.sleep(60)  # 60초 대기
 
-            # Notify 기능 비활성화
             await client.stop_notify(CHARACTERISTIC_UUID)
-
-            # 이미지 데이터를 파일로 저장
-            await save_image(image_data)
-
-            # 바로 다음 이미지를 수신할 준비
             print("Waiting for next image...")
+
 
 # 이벤트 루프 실행
 asyncio.run(main())
