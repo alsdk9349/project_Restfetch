@@ -56,6 +56,11 @@ public class ReportServiceImpl implements ReportService {
     private final SseController sseController;
     private final SseRepository sseRepository;
 
+    /**
+     * 새로운 기록
+     * @param requestDto
+     * @return
+     */
     public ReportGetResponseDto newReport(ReportRequestDto requestDto) {
         log.info("New report");
 
@@ -84,8 +89,8 @@ public class ReportServiceImpl implements ReportService {
                 .observerId(observerId)
                 .observerSerialNumber(observerSerialNumber)
                 .picture(picture)
-                .createdAt(report.getCreatedAt())
                 .isPicked(report.isPicked())
+                .message("새로운 기록이 생겼습니다.")
                 .build();
 
         sseRepository.save(observerSerialNumber, new SseEmitter());
@@ -96,6 +101,11 @@ public class ReportServiceImpl implements ReportService {
         return responseDto;
     }
 
+    /**
+     * 임베디드가 회수 요청 받기
+     * @param observerId
+     * @return
+     */
     public List<ReportGetResponseDto> getReports(Long observerId) {
         log.info("Get reports");
 

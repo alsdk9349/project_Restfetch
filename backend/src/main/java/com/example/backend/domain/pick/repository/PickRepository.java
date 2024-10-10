@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface PickRepository extends JpaRepository<Pick, Long> {
     Optional<Pick> findByReport(Report report);
-
+    Optional<Report> findByPick(Pick pick);
 }

@@ -99,6 +99,21 @@ public class PickServiceImpl implements PickService {
 
         Pick pick = picks.get(0);
 
+        Report report = pickRepository.findByPick(pick)
+                .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
+
+        ReportGetResponseDto responseDto = ReportGetResponseDto.builder()
+                .reportId(report.getId())
+                .observerSerialNumber(report.getObserver().getObserverSerialNumber())
+                .pictureName(report.getPictureName())
+                .picture(report.getPicture())
+                .isPicked(report.isPicked())
+                .message("물건 회수 시작했습니다")
+                .build();
+
+        sseRepository.save("물건 회수 시작했습니다.", new SseEmitter());
+        sseController.send(responseDto, "물건 회수 시작했습니다");
+
         Observer observer = pick.getReport().getObserver();
         pickRepository.delete(pick);
 
@@ -158,6 +173,7 @@ public class PickServiceImpl implements PickService {
 
         ReportGetResponseDto responseDto = ReportGetResponseDto.builder()
                 .reportId(report.getId())
+                .message("물건을 회수했습니다.")
                 .build();
 
         sseRepository.save("물건을 회수했습니다.", new SseEmitter());
