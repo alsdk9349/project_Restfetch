@@ -68,19 +68,19 @@ public class SseServiceImpl implements SseService {
                         .data(reportData);
                 //.reconnectTime(3000L);
                 emitter.send(event); // 데이터 전송
-                log.info("zzz{}", reportData);
+                log.info("zz{}", reportData);
 
                 // 캐시된 이벤트도 함께 전송
                 List<Object> cachedEvents = sseRepository.getEvents(key); // 해당 키로 캐시된 이벤트 가져오기
 //                Collections.reverse(cachedEvents); // 리스트를 역순으로 변환
 
-                for (Object cachedEvent : cachedEvents) {
+                /*for (Object cachedEvent : cachedEvents) {
                     SseEmitter.SseEventBuilder cachedEventBuilder = SseEmitter.event()
                             .name(key) // 캐시된 이벤트 이름 (필요시 변경 가능)
                             .data(cachedEvent);
                     emitter.send(cachedEventBuilder); // 캐시된 이벤트 전송
                     log.info("Cached event sent: {}", cachedEvent);
-                }
+                }*/
 
             } catch (Exception e) {
                 log.info("fail");
