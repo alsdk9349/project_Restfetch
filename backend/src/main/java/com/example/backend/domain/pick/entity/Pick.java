@@ -21,4 +21,5 @@ public class Pick {
     @JoinColumn(name = "report_id")
     private Report report;
 
+
 }
