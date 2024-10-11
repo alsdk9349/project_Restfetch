@@ -98,9 +98,9 @@ void setup() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
   
-  // 해상도 및 품질 설정
-  config.frame_size = FRAMESIZE_QVGA;  
-  config.jpeg_quality = 15;  
+  // 해상도 및 품질 설정 (품질을 10으로 줄임)
+  config.frame_size = FRAMESIZE_QVGA;
+  config.jpeg_quality = 10;
   config.fb_count = 1;
 
   if (esp_camera_init(&config) != ESP_OK) {
@@ -112,12 +112,18 @@ void setup() {
 
 void loop() {
   // 1분(60초) 대기 후 사진 촬영 시작
-  delay(60000);  // 60초 대기
-  
+  //delay(50000);  // 50초 대기
+  delay(30000);
+
   // 플래시 켜기 (필요 시 활성화)
   digitalWrite(FLASH_GPIO_NUM, HIGH);
   delay(100);  // 플래시를 켜고 잠시 대기
-  
+
+  String startMsg = "IMG_START";
+  pCharacteristic->setValue(startMsg.c_str());
+  pCharacteristic->notify();
+  delay(100); // 잠시 대기
+
   camera_fb_t *fb = esp_camera_fb_get();
   if (!fb) {
     Serial.println("Camera capture failed");
@@ -125,10 +131,11 @@ void loop() {
     return;
   }
 
-  // 이미지 데이터를 청크 단위로 전송 (BLE 패킷 크기 제한 방지)
+  // 이미지 데이터를 청크 단위로 전송 (BLE 패킷 크기 제한 방지, chunkSize를 256으로 줄임)
   size_t len = fb->len;
   uint8_t *buf = fb->buf;
-  const size_t chunkSize = 512;  // BLE 패킷 크기에 맞춘 청크 크기 설정
+  const size_t chunkSize = 256;  // BLE 패킷 크기에 맞춘 청크 크기 설정
+
 
   while (len > 0) {
     size_t sendSize = (len > chunkSize) ? chunkSize : len;
@@ -136,11 +143,16 @@ void loop() {
     pCharacteristic->notify();  // 청크 데이터 전송
     buf += sendSize;
     len -= sendSize;
-    delay(20);  // 전송 사이에 약간의 딜레이 추가
+    delay(50);  // 전송 사이에 약간의 딜레이 추가 (전송 안정성을 높이기 위해 50ms)
   }
 
   esp_camera_fb_return(fb);  // 프레임 버퍼 해제
-  
+
+  String endMsg = "IMG_END";
+  pCharacteristic->setValue(endMsg.c_str());
+  pCharacteristic->notify();
+  delay(100); // 잠시 대기
+
   // 플래시 끄기 (필요 시 활성화)
   digitalWrite(FLASH_GPIO_NUM, LOW);
   Serial.println("Image data notified");
